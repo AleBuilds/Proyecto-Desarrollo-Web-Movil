@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi tienda</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; }
+  .container { padding-top: 50px; padding-bottom: 50px; }
+  h2 { font-weight: 700; margin-bottom: 20px; }
+  .btn-default { background: #111; color: #fff; border: none; padding: 10px 22px; }
+  .btn-default:hover { background: #333; color: #fff; }
+  footer { background: #111; color: #ccc; padding: 40px 0; margin-top: 20px; }
+  footer p, footer a { color: #ccc; }
+  a:focus, button:focus, input:focus { outline: 3px solid #2a6ebb; outline-offset: 2px; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-default" aria-label="Navegación principal">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu-principal" aria-expanded="false" aria-label="Abrir menú de navegación">
+        <span class="sr-only">Abrir menú</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Nombre del sitio</a>
+    </div>
+    <div class="collapse navbar-collapse" id="menu-principal">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Página</a></li>
+        <li><a href="#">Página</a></li>
+        <li><a href="#">Página</a></li>
+        <li><a href="#" class="btn btn-default navbar-btn" style="margin-top:8px; margin-left:15px;">Botón</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header style="background: linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),
+  url('https://images.unsplash.com/photo-1713448721040-9921e982d672?w=1600') center/cover no-repeat;
+  color:#fff; text-align:center; padding:120px 20px;">
+  <h1 style="font-size:42px; font-weight:700;">Título de la tienda</h1>
+  <p>Subtítulo con descripción del sitio de compras.</p>
+  <a href="#" class="btn btn-default">Botón</a>
+</header>
+
+<main>
+
+  <section class="container" aria-label="Presentación de la tienda">
+    <div class="row">
+      <div class="col-xs-12 col-md-6 col-lg-8">
+        <h2>Encabezado</h2>
+        <p>Un subtítulo para esta sección.</p>
+      </div>
+      <div class="col-xs-12 col-md-6 col-lg-4">
+        <img src="https://images.unsplash.com/photo-1559697242-a465f2578a95?w=700" alt="Modelo con abrigo de moda, estilo urbano" style="width:100%">
+      </div>
+    </div>
+  </section>
+
+  <section class="container" aria-label="Sección destacada de estilo">
+    <div class="row">
+      <div class="col-xs-12 col-md-6 col-lg-5">
+        <img src="https://images.unsplash.com/photo-1678884399113-0a2b079a31f5?w=700" alt="Mujer con chaqueta blanca y gafas de sol" style="width:100%">
+      </div>
+      <div class="col-xs-12 col-md-6 col-lg-7">
+        <h2>Encabezado</h2>
+        <p>Un subtítulo para esta sección.</p>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="container" aria-label="Demostración de resiliencia">
+    <p>
+      <label style="margin-right:15px;"><input type="radio" name="estado-demo" value="normal" checked> Normal</label>
+      <label style="margin-right:15px;"><input type="radio" name="estado-demo" value="demora"> Simular demora de 10s en la API</label>
+      <label><input type="radio" name="estado-demo" value="error"> Simular error de API</label>
+    </p>
+    <p id="aviso-demora" class="text-muted" style="display:none;">Esperando respuesta de la API… (cuenta atrás real de 10s)</p>
+  </section>
+
+  <section class="container" aria-label="Productos destacados">
+    <div class="row" id="seccion-productos">
+      <div class="col-xs-12 col-md-6 col-lg-7">
+        <h4>Producto destacado</h4>
+        <img id="img-destacado" src="04-copy-botones.png" alt="Producto destacado: jeans y zapatos estilo streetwear" style="width:100%; height:280px; object-fit:cover;">
+        <p>$10,99</p>
+      </div>
+      <div class="col-xs-12 col-md-6 col-lg-5">
+        <h4>Producto</h4>
+        <img id="img-producto" src="04b-copy-imagen2.png" alt="Producto: conjunto deportivo con zapatillas blancas" style="width:100%; height:280px; object-fit:cover;">
+        <p>$10,99</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer role="contentinfo">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-xs-12"><p>Nombre del sitio</p></div>
+      <div class="col-lg-3 col-xs-4"><p>Tema</p></div>
+      <div class="col-lg-3 col-xs-4"><p>Tema</p></div>
+      <div class="col-lg-3 col-xs-4"><p>Tema</p></div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+  var imgDestacadoOriginal = document.getElementById('img-destacado').outerHTML;
+  var imgProductoOriginal = document.getElementById('img-producto').outerHTML;
+  var timerDemora = null;
+
+  var cargaHTML = '<div style="width:100%; height:280px; border:1px dashed #ccc; display:flex; align-items:center; justify-content:center;">' +
+    '<div role="status" aria-label="Cargando producto" style="width:32px; height:32px; border:3px solid #e0e0e0; border-top-color:#333; border-radius:50%; animation: girar 0.8s linear infinite;"></div></div>';
+
+  var errorHTML = '<div style="width:100%; height:280px; border:2px dashed #d9534f; background:#fdf3f2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;" role="alert">' +
+    '<div style="font-size:32px; color:#d9534f;">&#9888;</div>' +
+    '<p style="color:#d9534f; font-weight:700; margin:8px 0 4px;">Error al cargar el producto</p>' +
+    '<button class="btn btn-default" id="btn-reintentar">Reintentar</button></div>';
+
+  function renderNormal() {
+    document.getElementById('seccion-productos').innerHTML =
+      '<div class="col-xs-12 col-md-6 col-lg-7"><h4>Producto destacado</h4>' + imgDestacadoOriginal + '<p>$10,99</p></div>' +
+      '<div class="col-xs-12 col-md-6 col-lg-5"><h4>Producto</h4>' + imgProductoOriginal + '<p>$10,99</p></div>';
+  }
+
+  function renderCarga() {
+    document.getElementById('seccion-productos').innerHTML =
+      '<div class="col-xs-12 col-md-6 col-lg-7"><h4>Producto destacado</h4>' + cargaHTML + '<p>$10,99</p></div>' +
+      '<div class="col-xs-12 col-md-6 col-lg-5"><h4>Producto</h4>' + cargaHTML + '<p>$10,99</p></div>';
+  }
+
+  function renderError() {
+    document.getElementById('seccion-productos').innerHTML =
+      '<div class="col-xs-12 col-md-6 col-lg-7"><h4>Producto destacado</h4>' + errorHTML.replace('id="btn-reintentar"', 'id="btn-r1"') + '<p>$10,99</p></div>' +
+      '<div class="col-xs-12 col-md-6 col-lg-5"><h4>Producto</h4>' + errorHTML.replace('id="btn-reintentar"', 'id="btn-r2"') + '<p>$10,99</p></div>';
+    document.getElementById('btn-r1').addEventListener('click', volverNormal);
+    document.getElementById('btn-r2').addEventListener('click', volverNormal);
+  }
+
+  function volverNormal() {
+    document.querySelector('input[name="estado-demo"][value="normal"]').checked = true;
+    document.getElementById('aviso-demora').style.display = 'none';
+    if (timerDemora) { clearTimeout(timerDemora); timerDemora = null; }
+    renderNormal();
+  }
+
+  document.querySelectorAll('input[name="estado-demo"]').forEach(function(radio) {
+    radio.addEventListener('change', function(e) {
+      if (timerDemora) { clearTimeout(timerDemora); timerDemora = null; }
+      document.getElementById('aviso-demora').style.display = 'none';
+
+      if (e.target.value === 'normal') {
+        renderNormal();
+      } else if (e.target.value === 'demora') {
+        
+        renderCarga();
+        document.getElementById('aviso-demora').style.display = 'block';
+        timerDemora = setTimeout(function() {
+          renderNormal();
+          document.getElementById('aviso-demora').style.display = 'none';
+          document.querySelector('input[name="estado-demo"][value="normal"]').checked = true;
+        }, 10000);
+      } else if (e.target.value === 'error') {
+        renderError();
+      }
+    });
+  });
+</script>
+</body>
+</html>
