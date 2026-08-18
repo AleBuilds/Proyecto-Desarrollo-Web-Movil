@@ -52,13 +52,13 @@
                 <!-- The slideshow/carousel -->
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                    <img src="img/la.jpg" alt="Los Angeles" class="d-block w-100">
+                    <img src="img/carrusel-1.png" alt="Flow" class="d-block w-100">
                     </div>
                     <div class="carousel-item">
-                    <img src="img/chicago.jpg" alt="Chicago" class="d-block w-100">
+                    <img src="img/carrusel-2.png" alt="This is Urban" class="d-block w-100">
                     </div>
                     <div class="carousel-item">
-                    <img src="img/ny.jpg" alt="New York" class="d-block w-100">
+                    <img src="img/carrusel-3.png" alt="Drip" class="d-block w-100">
                     </div>
                 </div>
                 <!-- Left and right controls/icons -->
@@ -73,101 +73,51 @@
                 <div class="row">
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
                         <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
+                            <img class="card-img-top" src="img/producto-blazer-negro-premium.jpg" alt="Card image">
                             <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
+                                <h4 class="card-title">Blazer Negro Premium</h4>
                                 <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
+                                <a href="#" class="btn btn-primary">Ver Producto</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
                         <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
+                            <img class="card-img-top" src="img/producto-abrigo-trendy-peludo.jpg" alt="Card image">
                             <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
+                                <h4 class="card-title">Abrigo Trendy Peludo</h4>
                                 <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
+                                <a href="#" class="btn btn-primary">Ver Producto</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
                         <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
+                            <img class="card-img-top" src="img/producto-lentes-sol-street.jpg" alt="Card image">
                             <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
+                                <h4 class="card-title">Lentes de Sol Trendy</h4>
                                 <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
+                                <a href="#" class="btn btn-primary">Ver Producto</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
                         <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
+                            <img class="card-img-top" src="img/producto-set-deportivo-urbano.jpg" alt="Card image">
                             <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
+                                <h4 class="card-title">Set Deportivo Urbano</h4>
                                 <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
+                                <a href="#" class="btn btn-primary">Ver Producto</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
                         <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
+                            <img class="card-img-top" src="img/producto-set-streetwear-oscuro.jpg" alt="Card image">
                             <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
+                                <h4 class="card-title">Set Streetwear Oscuro</h4>
                                 <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
-                        <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
-                            <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
-                                <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
-                        <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
-                            <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
-                                <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
-                        <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
-                            <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
-                                <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
-                        <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
-                            <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
-                                <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
-                        <div class="card">
-                            <img class="card-img-top" src="img/img_avatar1.png" alt="Card image">
-                            <div class="card-body">
-                                <h4 class="card-title">John Doe</h4>
-                                <p class="card-text">Some example text.</p>
-                                <a href="#" class="btn btn-primary">See Profile</a>
+                                <a href="#" class="btn btn-primary">Ver Producto</a>
                             </div>
                         </div>
                     </div>                                                                                                                                                                                    
