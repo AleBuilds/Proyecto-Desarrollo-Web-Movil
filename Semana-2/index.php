@@ -29,13 +29,13 @@
                         </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="productos.php">productos</a>
+                            <a class="nav-link" href="productos.php">Productos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="servicios.php">servicios</a>
+                            <a class="nav-link" href="servicios.php">Servicios</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="contacto.php">contacto</a>
+                            <a class="nav-link" href="contacto.php">Contacto</a>
                         </li>
                     </ul>
                 </div>
