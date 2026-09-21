@@ -2,147 +2,71 @@
 $activo = 'nosotros';
 
 $pilares = [
-    ['titulo' => 'Fresco y Natural',   'texto' => ['Ingredientes seleccionados', 'a diario en el mercado local']],
-    ['titulo' => 'Receta Tradicional', 'texto' => ['Recetas transmitidas de', 'generación en generación']],
-    ['titulo' => 'Pasión Familiar',    'texto' => ['Un negocio familiar con', 'más de 20 años de historia']],
+    ['titulo' => 'Fresco y Natural',   'desc' => 'Ingredientes seleccionados a diario en los mercados locales para garantizar el mejor sabor.', 'img' => 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400'],
+    ['titulo' => 'Receta Tradicional', 'desc' => 'Recetas ancestrales mediterráneas transmitidas de generación en generación con amor y sazón.', 'img' => 'https://images.pexels.com/photos/2233729/pexels-photo-2233729.jpeg?auto=compress&cs=tinysrgb&w=400'],
+    ['titulo' => 'Pasión Familiar',    'desc' => 'Un restaurante familiar apasionado por ofrecer la mejor atención y experiencia gastronómica.', 'img' => 'https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=400'],
 ];
 ?>
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <title>Nosotros — El Mediterráneo</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <style>
-            /* Paleta de colores base del Wireframe */
-            .bg-carbon { background-color: #1A1A1A !important; }
-            .bg-crema { background-color: #F3EFE6 !important; }
-            .placeholder-line { background-color: #ccc; height: 12px; margin-bottom: 12px; border-radius: 6px; }
-            .placeholder-box { background-color: #f8f9fa; border: 1px solid #ced4da; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.8rem; font-weight: bold; position: relative; overflow: hidden; }
-            
-            /* Simulación del aspa en las imágenes (X) */
-            .placeholder-box::before, .placeholder-box::after { content: ''; position: absolute; width: 200%; height: 1px; background-color: #ced4da; top: 50%; left: -50%; }
-            .placeholder-box::before { transform: rotate(35deg); }
-            .placeholder-box::after { transform: rotate(-35deg); }
-            .placeholder-label { background: white; padding: 4px 12px; border: 1px solid #ced4da; z-index: 1; text-transform: uppercase; }
+<head>
+    <title>Nosotros — El Mediterráneo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-crema d-flex flex-column min-vh-100">
 
-            /* Íconos circulares de pilares */
-            .pilar-icono { width: 64px; height: 64px; border-radius: 50%; background-color: #ccc; margin: 0 auto 24px auto; }
-        </style>
-    </head>
-    <body class="bg-white d-flex flex-column min-vh-100">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-sm bg-white navbar-light border-bottom sticky-top">
-            <div class="container">
-                <a class="navbar-brand fw-bold" href="index.php">EL MEDITERRÁNEO</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
-                    <ul class="navbar-nav">
-                        <li class="nav-item"><a class="nav-link" href="index.php">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" href="menu.php">Menú</a></li>
-                        <li class="nav-item"><a class="nav-link active fw-bold" href="nosotros.php">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="reservas.php">Reservas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="contacto.php">Contacto</a></li>
-                    </ul>
-                </div>
-                <!-- Ícono de carrito -->
-                <div class="d-flex align-items-center">
-                    <button type="button" class="btn btn-outline-dark me-2 rounded-0">
-                        <i class="fa fa-shopping-bag"></i> 2
-                    </button>
+    <!-- Navbar -->
+    <?php include 'navbar.php'; ?>
+
+    <!-- Contenido Principal -->
+    <main class="container py-5 flex-grow-1">
+        
+        <!-- Hero: Nuestra Historia -->
+        <div class="row align-items-center g-5 mb-5">
+            <div class="col-12 col-md-6">
+                <div class="rounded-3 overflow-hidden shadow">
+                    <img src="https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=800" class="img-cover w-100" alt="Restaurante El Mediterráneo" style="height: 380px;">
                 </div>
             </div>
-        </nav>
-
-        <!-- Contenido Principal -->
-        <main class="container mt-5 mb-5 pt-4 flex-grow-1">
             
-            <!-- Hero: Nuestra Historia (Layout 2 columnas) -->
-            <div class="row align-items-center mb-5 pb-5">
-                <!-- Columna Izquierda: Imagen -->
-                <div class="col-12 col-md-6 mb-4 mb-md-0">
-                    <div class="placeholder-box w-100" style="height: 400px;">
-                        <span class="placeholder-label">Imagen Restaurante</span>
-                    </div>
-                </div>
-                
-                <!-- Columna Derecha: Textos y Botón -->
-                <div class="col-12 col-md-6 ps-md-5">
-                    <h1 class="fw-bold text-uppercase mb-4">Nuestra Historia</h1>
-                    
-                    <!-- Párrafo placeholder -->
-                    <div class="placeholder-line" style="width: 100%;"></div>
-                    <div class="placeholder-line" style="width: 100%;"></div>
-                    <div class="placeholder-line" style="width: 70%;"></div>
-                    <div class="placeholder-line" style="width: 100%;"></div>
-                    <div class="placeholder-line" style="width: 100%;"></div>
-                    <div class="placeholder-line" style="width: 40%; margin-bottom: 32px;"></div>
-                    
-                    <a href="#" class="btn text-white text-uppercase fw-bold rounded-0 px-4 py-2" style="background-color: #1A1A1A; font-size: 0.9rem;">
-                        Conocer más
-                    </a>
-                </div>
+            <div class="col-12 col-md-6">
+                <span class="text-oliva text-uppercase fw-bold tracking-wider" style="font-size: 0.8rem;">Conócenos</span>
+                <h1 class="font-cinzel text-carbon fw-bold mb-3 fs-2 text-uppercase">Nuestra Historia</h1>
+                <p class="text-secondary mb-3">
+                    Nacimos del amor por los sabores auténticos de las costas del Mediterráneo. Desde hace más de 15 años preparamos cada plato respetando los métodos tradicionales: asados a las brasas, marinados naturales y pan pita horneado cada mañana.
+                </p>
+                <p class="text-secondary mb-4">
+                    Nuestra misión es llevar a tu mesa la calidez de un festín familiar con la mejor selección de garbanzos, especias orientales y finos cortes de carne.
+                </p>
+                <a href="menu.php" class="btn btn-fuego text-uppercase fw-bold px-4 py-3 shadow">Descubrir el Menú</a>
             </div>
+        </div>
 
-            <!-- Sección: Nuestros Pilares -->
-            <section class="mt-4 pt-5 border-top">
-                <h3 class="fw-bold text-uppercase mb-4">Nuestros Pilares</h3>
-                
-                <div class="row">
-                    <?php foreach ($pilares as $pilar): ?>
-                        <div class="col-12 col-md-4 mb-4">
-                            <!-- Tarjeta de Pilar -->
-                            <div class="card border bg-light h-100 p-4 p-lg-5 text-center rounded-0" style="background-color: #f8f9fa !important;">
-                                <!-- Ícono circular -->
-                                <div class="pilar-icono"></div>
-                                
-                                <!-- Título -->
-                                <h5 class="fw-bold text-uppercase mb-4" style="font-size: 1.1rem;"><?php echo $pilar['titulo']; ?></h5>
-                                
-                                <!-- Líneas placeholder generadas desde el array -->
-                                <div class="mt-auto">
-                                    <?php foreach ($pilar['texto'] as $i => $linea): ?>
-                                        <div class="placeholder-line" style="width: <?php echo $i === count($pilar['texto']) - 1 ? '55%' : '90%'; ?>; margin: 0 auto 12px;"></div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
+        <!-- Sección: Nuestros Pilares -->
+        <section class="pt-5 border-top border-warning">
+            <div class="text-center mb-5">
+                <h3 class="font-cinzel text-tierra fw-bold text-uppercase fs-2">Nuestros Pilares</h3>
+                <div class="bg-fuego mx-auto" style="height: 3px; width: 60px;"></div>
+            </div>
+            
+            <div class="row g-4">
+                <?php foreach ($pilares as $pilar): ?>
+                    <div class="col-12 col-md-4">
+                        <div class="card border-0 shadow-sm h-100 text-center p-4 rounded-3 bg-white card-hover">
+                            <img src="<?php echo $pilar['img']; ?>" class="rounded-circle mx-auto mb-3 img-cover" style="width: 100px; height: 100px;" alt="<?php echo $pilar['titulo']; ?>">
+                            <h5 class="font-cinzel fw-bold text-carbon text-uppercase mb-2"><?php echo $pilar['titulo']; ?></h5>
+                            <p class="text-secondary small mb-0"><?php echo $pilar['desc']; ?></p>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="container-fluid bg-carbon text-white pt-5 pb-3 mt-auto">
-            <div class="container">
-                <div class="row mb-4">
-                    <div class="col-md-4 mb-3">
-                        <h6 class="fw-bold text-uppercase mb-3">El Mediterráneo</h6>
-                        <div class="placeholder-line bg-secondary" style="width: 60%;"></div>
-                        <div class="placeholder-line bg-secondary" style="width: 40%; margin-top: 8px;"></div>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <h6 class="fw-bold text-uppercase mb-3">Horarios</h6>
-                        <div class="placeholder-line bg-secondary" style="width: 50%;"></div>
-                        <div class="placeholder-line bg-secondary" style="width: 30%; margin-top: 8px;"></div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <h6 class="fw-bold text-uppercase mb-3">Contacto</h6>
-                        <div class="placeholder-line bg-secondary" style="width: 70%;"></div>
-                        <div class="placeholder-line bg-secondary" style="width: 50%; margin-top: 8px;"></div>
-                    </div>
-                </div>
-                <div class="row border-top border-secondary pt-3">
-                    <div class="col-12 text-start" style="font-size: 0.8rem; color: #888;">
-                        © 2026 El Mediterráneo. Todos los derechos reservados. Wireframe Layout.
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
-        </footer>
-    </body>
-</html>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <?php include 'footer.php'; ?>

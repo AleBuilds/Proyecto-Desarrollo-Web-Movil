@@ -1,245 +1,162 @@
+<?php
+$activo = 'inicio';
+?>
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <title>Inicio — El Mediterráneo</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <style>
-            /* Paleta de colores base del Wireframe */
-            .bg-carbon { background-color: #1A1A1A !important; }
-            .bg-crema { background-color: #F3EFE6 !important; }
-            .placeholder-line { background-color: #ccc; height: 12px; margin-bottom: 8px; border-radius: 4px; }
-            .placeholder-box { background-color: #e9ecef; border: 1px solid #ced4da; display: flex; align-items: center; justify-content: center; color: #6c757d; }
-        </style>
-    </head>
-    <body class="bg-white">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-sm bg-white navbar-light border-bottom sticky-top">
-            <div class="container">
-                <a class="navbar-brand fw-bold" href="index.php">EL MEDITERRÁNEO</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="index.php">Inicio</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="menu.php" role="button" data-bs-toggle="dropdown">Menú</a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Todos</a></li>
-                                <li><a class="dropdown-item" href="#">Hummus</a></li>
-                                <li><a class="dropdown-item" href="#">Falafel</a></li>
-                                <li><a class="dropdown-item" href="#">Shawarma</a></li>
-                                <li><a class="dropdown-item" href="#">Parrilla</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="nosotros.php">Nosotros</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="reservas.php">Reservas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="contacto.php">Contacto</a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- Ícono de carrito / Acceder modal -->
-                <div class="d-flex align-items-center">
-                    <button type="button" class="btn btn-outline-dark me-2" data-bs-toggle="modal" data-bs-target="#myModal">
-                        <i class="fa fa-shopping-bag"></i> 2
-                    </button>
-                </div>
-            </div>
-        </nav>
+<head>
+    <title>Inicio — El Mediterráneo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-crema d-flex flex-column min-vh-100">
 
-        <!-- Sección 1: Hero (Reemplaza al carrusel) -->
-        <div class="container-fluid bg-crema py-5 text-center d-flex flex-column justify-content-center align-items-center" style="min-height: 400px;">
-            <div class="bg-white p-5 border shadow-sm w-75">
-                <h1 class="display-4 fw-bold text-uppercase">Título Principal</h1>
-                <div class="mx-auto mt-4" style="width: 50%;">
-                    <div class="placeholder-line" style="width: 100%;"></div>
-                    <div class="placeholder-line" style="width: 70%; margin: 0 auto;"></div>
-                </div>
-                <div class="mt-4">
-                    <a href="menu.php" class="btn btn-dark btn-lg text-uppercase me-2" style="background-color: #1A1A1A;">Ver Menú</a>
-                    <a href="reservas.php" class="btn btn-outline-dark btn-lg text-uppercase">Reservar</a>
+    <!-- Navbar -->
+    <?php include 'navbar.php'; ?>
+
+    <!-- Hero Section -->
+    <section class="position-relative py-5 overflow-hidden text-center text-white bg-carbon" style="background: linear-gradient(rgba(26,26,26,0.7), rgba(59,42,32,0.85)), url('https://images.pexels.com/photos/12737656/pexels-photo-12737656.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') center/cover no-repeat; min-height: 480px;">
+        <div class="container py-5 my-auto position-relative z-1">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <span class="text-sol font-cinzel text-uppercase tracking-widest fw-bold mb-2 d-block">Sabor Tradicional & Artesanal</span>
+                    <h1 class="display-3 font-cinzel fw-bold mb-3 text-uppercase">El Mediterráneo</h1>
+                    <p class="lead text-light mb-4 px-md-5 font-monospace fs-5">
+                        Descubre los mejores sabores de la cocina mediterránea: hummus suave, falafel crujiente, shawarmas jugosos y carnes a la parrilla.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="menu.php" class="btn btn-fuego btn-lg px-4 py-3 text-uppercase shadow">Ver Menú Completo</a>
+                        <a href="reservas.php" class="btn btn-outline-light btn-lg px-4 py-3 text-uppercase fw-bold">Reservar Mesa</a>
+                    </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Sección 2: Nuestras Especialidades (Proporción 4 columnas) -->
-        <div class="container mt-5 pt-4">
-            <h3 class="fw-bold mb-4 text-uppercase">Nuestras Especialidades</h3>
-            <div class="row text-center">
-                <div class="col-12 col-sm-6 col-md-3 mb-4">
-                    <div class="placeholder-box mb-3" style="height: 180px;">
-                        <span class="border bg-white px-2 py-1">X</span>
+    <!-- Nuestras Especialidades -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="font-cinzel text-tierra fw-bold text-uppercase fs-2">Nuestras Especialidades</h2>
+            <div class="bg-fuego mx-auto" style="height: 3px; width: 60px;"></div>
+        </div>
+        
+        <div class="row g-4 text-center">
+            <div class="col-6 col-md-3">
+                <a href="menu.php?categoria=hummus" class="card border-0 shadow-sm h-100 text-decoration-none card-hover overflow-hidden rounded-3">
+                    <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600" class="card-img-top img-cover" alt="Hummus" style="height: 180px;">
+                    <div class="card-body bg-white py-3">
+                        <h5 class="font-cinzel fw-bold text-carbon text-uppercase mb-0 fs-6">Hummus</h5>
                     </div>
-                    <h5 class="fw-bold text-uppercase">Hummus</h5>
-                </div>
-                <div class="col-12 col-sm-6 col-md-3 mb-4">
-                    <div class="placeholder-box mb-3" style="height: 180px;">
-                        <span class="border bg-white px-2 py-1">X</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="menu.php?categoria=falafel" class="card border-0 shadow-sm h-100 text-decoration-none card-hover overflow-hidden rounded-3">
+                    <img src="https://images.pexels.com/photos/6287525/pexels-photo-6287525.jpeg?auto=compress&cs=tinysrgb&w=600" class="card-img-top img-cover" alt="Falafel" style="height: 180px;">
+                    <div class="card-body bg-white py-3">
+                        <h5 class="font-cinzel fw-bold text-carbon text-uppercase mb-0 fs-6">Falafel</h5>
                     </div>
-                    <h5 class="fw-bold text-uppercase">Falafel</h5>
-                </div>
-                <div class="col-12 col-sm-6 col-md-3 mb-4">
-                    <div class="placeholder-box mb-3" style="height: 180px;">
-                        <span class="border bg-white px-2 py-1">X</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="menu.php?categoria=shawarma" class="card border-0 shadow-sm h-100 text-decoration-none card-hover overflow-hidden rounded-3">
+                    <img src="https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=600" class="card-img-top img-cover" alt="Shawarma" style="height: 180px;">
+                    <div class="card-body bg-white py-3">
+                        <h5 class="font-cinzel fw-bold text-carbon text-uppercase mb-0 fs-6">Shawarma</h5>
                     </div>
-                    <h5 class="fw-bold text-uppercase">Shawarma</h5>
-                </div>
-                <div class="col-12 col-sm-6 col-md-3 mb-4">
-                    <div class="placeholder-box mb-3" style="height: 180px;">
-                        <span class="border bg-white px-2 py-1">X</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="menu.php?categoria=parrilla" class="card border-0 shadow-sm h-100 text-decoration-none card-hover overflow-hidden rounded-3">
+                    <img src="https://images.pexels.com/photos/2233729/pexels-photo-2233729.jpeg?auto=compress&cs=tinysrgb&w=600" class="card-img-top img-cover" alt="Parrilla" style="height: 180px;">
+                    <div class="card-body bg-white py-3">
+                        <h5 class="font-cinzel fw-bold text-carbon text-uppercase mb-0 fs-6">Parrilla</h5>
                     </div>
-                    <h5 class="fw-bold text-uppercase">Parrilla</h5>
-                </div>
+                </a>
             </div>
         </div>
+    </section>
 
-        <!-- Sección 3: Productos Destacados (Proporción 3 columnas) -->
-        <div class="container mt-5">
-            <h3 class="fw-bold mb-4 text-uppercase">Productos Destacados</h3>
-            <div class="row">
+    <!-- Productos Destacados -->
+    <section class="bg-white py-5 border-top border-bottom border-warning">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="font-cinzel text-tierra fw-bold text-uppercase fs-2">Productos Destacados</h2>
+                <div class="bg-fuego mx-auto" style="height: 3px; width: 60px;"></div>
+            </div>
+
+            <div class="row g-4">
                 <!-- Tarjeta 1 -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="card border-0">
-                        <div class="placeholder-box" style="height: 220px;">IMAGEN PRODUCTO</div>
-                        <div class="card-body px-0">
-                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Entradas</small>
-                            <h5 class="card-title fw-bold">Hummus Clásico</h5>
-                            <div class="placeholder-line" style="width: 100%;"></div>
-                            <div class="placeholder-line" style="width: 60%;"></div>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <h5 class="mb-0 fw-bold">$4.500</h5>
-                                <button class="btn btn-outline-dark text-uppercase rounded-0 px-4">Agregar</button>
+                <div class="col-12 col-md-4">
+                    <div class="card h-100 border-0 shadow-sm card-hover rounded-3 overflow-hidden">
+                        <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600" class="card-img-top img-cover" alt="Hummus Clásico" style="height: 220px;">
+                        <div class="card-body d-flex flex-column p-4">
+                            <small class="text-oliva text-uppercase fw-bold tracking-wider mb-1" style="font-size: 0.75rem;">Entradas</small>
+                            <h5 class="font-cinzel fw-bold text-carbon mb-2">Hummus Clásico</h5>
+                            <p class="text-secondary small mb-4">Crema suave de garbanzos con tahini casero, aceite de oliva virgen y pimentón dulce.</p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
+                                <span class="fw-bold text-fuego fs-5">$4.500</span>
+                                <a href="carrito.php" class="btn btn-fuego btn-sm text-uppercase px-3">Agregar</a>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <!-- Tarjeta 2 -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="card border-0">
-                        <div class="placeholder-box" style="height: 220px;">IMAGEN PRODUCTO</div>
-                        <div class="card-body px-0">
-                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Especiales</small>
-                            <h5 class="card-title fw-bold">Plato Falafel</h5>
-                            <div class="placeholder-line" style="width: 100%;"></div>
-                            <div class="placeholder-line" style="width: 60%;"></div>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <h5 class="mb-0 fw-bold">$6.200</h5>
-                                <button class="btn btn-outline-dark text-uppercase rounded-0 px-4">Agregar</button>
+                <div class="col-12 col-md-4">
+                    <div class="card h-100 border-0 shadow-sm card-hover rounded-3 overflow-hidden">
+                        <img src="https://images.pexels.com/photos/6287525/pexels-photo-6287525.jpeg?auto=compress&cs=tinysrgb&w=600" class="card-img-top img-cover" alt="Plato Falafel" style="height: 220px;">
+                        <div class="card-body d-flex flex-column p-4">
+                            <small class="text-oliva text-uppercase fw-bold tracking-wider mb-1" style="font-size: 0.75rem;">Especiales</small>
+                            <h5 class="font-cinzel fw-bold text-carbon mb-2">Plato Falafel</h5>
+                            <p class="text-secondary small mb-4">6 croquetas crujientes de garbanzo con hierbas frescas, servidas con ensalada y salsa tahini.</p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
+                                <span class="fw-bold text-fuego fs-5">$6.200</span>
+                                <a href="carrito.php" class="btn btn-fuego btn-sm text-uppercase px-3">Agregar</a>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <!-- Tarjeta 3 -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="card border-0">
-                        <div class="placeholder-box" style="height: 220px;">IMAGEN PRODUCTO</div>
-                        <div class="card-body px-0">
-                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Sandwiches</small>
-                            <h5 class="card-title fw-bold">Shawarma Mixto</h5>
-                            <div class="placeholder-line" style="width: 100%;"></div>
-                            <div class="placeholder-line" style="width: 60%;"></div>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <h5 class="mb-0 fw-bold">$7.800</h5>
-                                <button class="btn btn-outline-dark text-uppercase rounded-0 px-4">Agregar</button>
+                <div class="col-12 col-md-4">
+                    <div class="card h-100 border-0 shadow-sm card-hover rounded-3 overflow-hidden">
+                        <img src="https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=600" class="card-img-top img-cover" alt="Shawarma Mixto" style="height: 220px;">
+                        <div class="card-body d-flex flex-column p-4">
+                            <small class="text-oliva text-uppercase fw-bold tracking-wider mb-1" style="font-size: 0.75rem;">Sandwiches</small>
+                            <h5 class="font-cinzel fw-bold text-carbon mb-2">Shawarma Mixto</h5>
+                            <p class="text-secondary small mb-4">Carne de ternera y pollo sazonada en pan pita recién horneado con vegetales y salsa de ajo.</p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
+                                <span class="fw-bold text-fuego fs-5">$7.800</span>
+                                <a href="carrito.php" class="btn btn-fuego btn-sm text-uppercase px-3">Agregar</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Sección 4: Promoción de la Semana (Banner horizontal) -->
-        <div class="container mt-4 mb-5 pb-4">
-            <div class="row bg-crema align-items-center border p-4 mx-0">
-                <div class="col-md-3 text-center mb-3 mb-md-0">
-                    <div class="placeholder-box bg-white mx-auto" style="height: 120px; width: 100%;">
-                        <span class="border px-2 py-1 bg-white" style="font-size: 0.8rem;">PROMO BANNER</span>
-                    </div>
+    <!-- Banner Promocional -->
+    <section class="container py-5">
+        <div class="card bg-carbon text-white border-0 shadow-lg overflow-hidden rounded-3">
+            <div class="row g-0 align-items-center">
+                <div class="col-md-5">
+                    <img src="https://images.pexels.com/photos/2233729/pexels-photo-2233729.jpeg?auto=compress&cs=tinysrgb&w=700" class="img-cover h-100" style="min-height: 250px;" alt="Promoción de la semana">
                 </div>
-                <div class="col-md-6">
-                    <h4 class="fw-bold text-uppercase">Promoción de la Semana</h4>
-                    <div class="placeholder-line" style="width: 90%;"></div>
-                    <div class="placeholder-line" style="width: 50%;"></div>
-                </div>
-                <div class="col-md-3 text-md-end text-center mt-3 mt-md-0">
-                    <a href="menu.php" class="btn btn-dark text-uppercase px-4" style="background-color: #1A1A1A;">Aprovechar</a>
+                <div class="col-md-7 p-4 p-md-5">
+                    <span class="badge bg-fuego text-uppercase mb-2 px-3 py-2">Oferta Especial</span>
+                    <h3 class="font-cinzel text-sol fw-bold text-uppercase mb-3">Promoción de la Semana</h3>
+                    <p class="text-light mb-4">
+                        Pide tus **Brochetas Premium** con 20% de descuento al agregar cualquier entrada o bebida natural. ¡Aprovecha la sazón mediterránea en tu hogar!
+                    </p>
+                    <a href="menu.php" class="btn btn-fuego text-uppercase px-4 py-3 fw-bold">Aprovechar Promo</a>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Footer (Fondo oscuro, 3 columnas) -->
-        <footer class="container-fluid bg-carbon text-white pt-5 pb-3">
-            <div class="container">
-                <div class="row mb-4">
-                    <div class="col-md-4 mb-3">
-                        <h6 class="fw-bold text-uppercase mb-3">El Mediterráneo</h6>
-                        <div class="placeholder-line bg-secondary" style="width: 60%;"></div>
-                        <div class="placeholder-line bg-secondary" style="width: 40%;"></div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <h6 class="fw-bold text-uppercase mb-3">Horarios</h6>
-                        <div class="placeholder-line bg-secondary" style="width: 50%;"></div>
-                        <div class="placeholder-line bg-secondary" style="width: 30%;"></div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <h6 class="fw-bold text-uppercase mb-3">Contacto</h6>
-                        <div class="placeholder-line bg-secondary" style="width: 70%;"></div>
-                        <div class="placeholder-line bg-secondary" style="width: 50%;"></div>
-                    </div>
-                </div>
-                <div class="row border-top border-secondary pt-3">
-                    <div class="col-12 text-start" style="font-size: 0.8rem; color: #888;">
-                        © 2026 El Mediterráneo. Todos los derechos reservados. Wireframe Layout.
-                    </div>
-                </div>
-            </div>
-        </footer>
-
-        <!-- Modal (Sin alterar su funcionalidad, pero estilizado) -->
-        <div class="modal fade" id="myModal">
-            <div class="modal-dialog">
-                <div class="modal-content rounded-0">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h4 class="modal-title fw-bold">Acceso Clientes</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                        <form action="menu.php">
-                            <div class="mb-3 mt-3">
-                                <label for="email" class="form-label text-uppercase fw-bold" style="font-size: 0.8rem;">Email:</label>
-                                <input type="email" class="form-control rounded-0" id="email" placeholder="Ingresa tu email" name="email">
-                            </div>
-                            <div class="mb-3">
-                                <label for="pwd" class="form-label text-uppercase fw-bold" style="font-size: 0.8rem;">Contraseña:</label>
-                                <input type="password" class="form-control rounded-0" id="pwd" placeholder="Ingresa tu contraseña" name="pswd">
-                            </div>
-                            <div class="form-check mb-3">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" type="checkbox" name="remember"> Recordarme
-                                </label>
-                            </div>
-                            <button type="submit" class="btn btn-dark w-100 rounded-0" style="background-color: #1A1A1A;">LOGIN</button>
-                        </form>
-                    </div>
-                    <!-- Modal footer -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-danger rounded-0" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
-</html>
+    <!-- Footer -->
+    <?php include 'footer.php'; ?>

@@ -9,27 +9,32 @@ $enlaces = [
     'contacto' => ['label' => 'Contacto',  'href' => 'contacto.php'],
 ];
 ?>
-<nav class="navbar" aria-label="Navegación principal">
-  <div class="container">
-    <a class="navbar-brand" href="index.php">
-      <span class="navbar-logo" aria-hidden="true"></span>
-      EL MEDITERRÁNEO
-    </a>
-    <button class="navbar-toggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false">
-      <span></span>
-    </button>
-    <ul class="navbar-links">
-      <?php foreach ($enlaces as $clave => $enlace): ?>
-        <li>
-          <a href="<?php echo $enlace['href']; ?>"<?php echo $activo === $clave ? ' aria-current="page"' : ''; ?>>
-            <?php echo $enlace['label']; ?>
-          </a>
-        </li>
-      <?php endforeach; ?>
-    </ul>
-    <a class="navbar-cart" href="carrito.php" aria-label="Ver carrito, 2 productos">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-      <span class="navbar-cart-badge" aria-hidden="true">2</span>
-    </a>
-  </div>
+<nav class="navbar navbar-expand-lg bg-carbon navbar-dark sticky-top shadow-sm py-3">
+    <div class="container">
+        <a class="navbar-brand font-cinzel fw-bold fs-4 text-uppercase tracking-wide" href="index.php" style="color: var(--sol);">
+            <i class="fa fa-cutlery me-2 text-fuego"></i>EL MEDITERRÁNEO
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-label="Abrir navegación">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+            <ul class="navbar-nav gap-lg-3">
+                <?php foreach ($enlaces as $clave => $enlace): ?>
+                    <li class="nav-item">
+                        <a class="nav-link text-uppercase fw-semibold px-3 <?php echo $activo === $clave ? 'active text-sol border-bottom border-2 border-warning' : 'text-light'; ?>" href="<?php echo $enlace['href']; ?>">
+                            <?php echo $enlace['label']; ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <!-- Botón interactivo al carrito -->
+        <div class="d-flex align-items-center">
+            <a href="carrito.php" class="btn btn-fuego rounded-pill px-4 py-2 d-flex align-items-center gap-2 shadow-sm text-decoration-none">
+                <i class="fa fa-shopping-cart"></i>
+                <span class="d-none d-sm-inline">Carrito</span>
+                <span class="badge badge-fuego rounded-circle bg-white text-fuego px-2 py-1 fs-7">2</span>
+            </a>
+        </div>
+    </div>
 </nav>
