@@ -18,7 +18,7 @@ $activo = 'inicio';
     <?php include 'navbar.php'; ?>
 
     <!-- Hero Section -->
-    <section class="position-relative py-5 overflow-hidden text-center text-white bg-carbon" style="background: linear-gradient(rgba(26,26,26,0.7), rgba(59,42,32,0.85)), url('https://images.pexels.com/photos/12737656/pexels-photo-12737656.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') center/cover no-repeat; min-height: 480px;">
+    <section class="position-relative py-5 overflow-hidden text-center text-white bg-carbon" style="background: linear-gradient(rgba(26,26,26,0.7), rgba(59,42,32,0.85)), url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat; min-height: 480px;">
         <div class="container py-5 my-auto position-relative z-1">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
