@@ -24,7 +24,7 @@
                 <h5 class="font-cinzel text-sol fw-bold text-uppercase mb-3">Contacto & Ubicación</h5>
                 <ul class="list-unstyled text-secondary small">
                     <li class="mb-2"><i class="fa fa-map-marker text-fuego me-2"></i>Av. Pajaritos 2100, Maipú, Región Metropolitana</li>
-                    <li class="mb-2"><i class="fa fa-phone text-fuego me-2"></i>+56 2 2345 6789</li>
+                    <li class="mb-2"><i class="fa fa-phone text-fuego me-2"></i>+56 9 8765 4321</li>
                     <li><i class="fa fa-envelope text-fuego me-2"></i>contacto@elmediterraneo.cl</li>
                 </ul>
             </div>

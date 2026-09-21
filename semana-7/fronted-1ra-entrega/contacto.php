@@ -3,7 +3,7 @@ $activo = 'contacto';
 
 $datosContacto = [
     ['titulo' => 'Dirección', 'valor' => 'Av. Pajaritos 2100, Maipú, Santiago', 'icon' => 'fa-map-marker'],
-    ['titulo' => 'Teléfono',  'valor' => '+56 2 2345 6789',                    'icon' => 'fa-phone'],
+    ['titulo' => 'Teléfono',  'valor' => '+56 9 8765 4321',                    'icon' => 'fa-phone'],
     ['titulo' => 'Email',     'valor' => 'contacto@elmediterraneo.cl',        'icon' => 'fa-envelope'],
     ['titulo' => 'Horarios',  'valor' => 'Lun a Dom: 12:30 - 23:30',          'icon' => 'fa-clock-o'],
 ];
