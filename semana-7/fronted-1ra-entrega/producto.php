@@ -79,9 +79,9 @@ function clp($valor) {
                         <button class="btn btn-outline-secondary font-bold" type="button" onclick="var el=document.getElementById('cant'); el.value=parseInt(el.value)+1;">+</button>
                     </div>
                     <!-- Botón Agregar -->
-                    <a href="carrito.php" class="btn btn-fuego text-uppercase fw-bold flex-grow-1 d-flex align-items-center justify-content-center">
+                    <button type="button" class="btn btn-fuego text-uppercase fw-bold flex-grow-1 d-flex align-items-center justify-content-center" onclick="var c=parseInt(document.getElementById('cant').value)||1; CarritoStorage.agregar({nombre: '<?php echo addslashes($producto['nombre']); ?>', precio: <?php echo $producto['precio']; ?>, img: '<?php echo $producto['imagen']; ?>', cantidad: c}); alert('¡Producto agregado al carrito!');">
                         <i class="fa fa-cart-plus me-2"></i> Agregar al Carrito
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>

@@ -98,7 +98,7 @@ $activo = 'inicio';
                             <p class="text-secondary small mb-4">Crema suave de garbanzos con tahini casero, aceite de oliva virgen y pimentón dulce.</p>
                             <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
                                 <span class="fw-bold text-fuego fs-5">$4.500</span>
-                                <a href="carrito.php" class="btn btn-fuego btn-sm text-uppercase px-3">Agregar</a>
+                                <button type="button" class="btn btn-fuego btn-sm text-uppercase px-3" onclick="CarritoStorage.agregar({nombre: 'Hummus Clásico', precio: 4500, img: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600'}); alert('¡Producto agregado al carrito!');">Agregar</button>
                             </div>
                         </div>
                     </div>
@@ -114,7 +114,7 @@ $activo = 'inicio';
                             <p class="text-secondary small mb-4">6 croquetas crujientes de garbanzo con hierbas frescas, servidas con ensalada y salsa tahini.</p>
                             <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
                                 <span class="fw-bold text-fuego fs-5">$6.200</span>
-                                <a href="carrito.php" class="btn btn-fuego btn-sm text-uppercase px-3">Agregar</a>
+                                <button type="button" class="btn btn-fuego btn-sm text-uppercase px-3" onclick="CarritoStorage.agregar({nombre: 'Plato Falafel', precio: 6200, img: 'https://images.pexels.com/photos/6287525/pexels-photo-6287525.jpeg?auto=compress&cs=tinysrgb&w=600'}); alert('¡Producto agregado al carrito!');">Agregar</button>
                             </div>
                         </div>
                     </div>
@@ -130,7 +130,7 @@ $activo = 'inicio';
                             <p class="text-secondary small mb-4">Carne de ternera y pollo sazonada en pan pita recién horneado con vegetales y salsa de ajo.</p>
                             <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
                                 <span class="fw-bold text-fuego fs-5">$7.800</span>
-                                <a href="carrito.php" class="btn btn-fuego btn-sm text-uppercase px-3">Agregar</a>
+                                <button type="button" class="btn btn-fuego btn-sm text-uppercase px-3" onclick="CarritoStorage.agregar({nombre: 'Shawarma Mixto', precio: 7800, img: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=600'}); alert('¡Producto agregado al carrito!');">Agregar</button>
                             </div>
                         </div>
                     </div>

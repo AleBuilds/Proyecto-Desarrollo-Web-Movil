@@ -1,32 +1,6 @@
 <?php
 $activo = '';
-
-$items = [
-    [
-        'nombre' => 'Shawarma Ternera Especial',
-        'precio_unitario' => 7200,
-        'cantidad' => 1,
-        'img' => 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=300'
-    ],
-    [
-        'nombre' => 'Plato Falafel Grande',
-        'precio_unitario' => 6200,
-        'cantidad' => 2,
-        'img' => 'https://images.pexels.com/photos/6287525/pexels-photo-6287525.jpeg?auto=compress&cs=tinysrgb&w=300'
-    ],
-];
-
 $envio = 2500;
-
-function clp($valor) {
-    return '$' . number_format($valor, 0, ',', '.');
-}
-
-$subtotal = 0;
-foreach ($items as $item) {
-    $subtotal += $item['precio_unitario'] * $item['cantidad'];
-}
-$total = $subtotal + $envio;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -51,37 +25,9 @@ $total = $subtotal + $envio;
         <div class="row g-4">
             <!-- Lista de Productos -->
             <div class="col-12 col-lg-8">
-                <?php foreach ($items as $index => $item): ?>
-                    <div class="card border-0 shadow-sm mb-3 rounded-3 overflow-hidden p-3 bg-white">
-                        <div class="d-flex align-items-center flex-wrap gap-3">
-                            <!-- Imagen del producto -->
-                            <img src="<?php echo $item['img']; ?>" class="rounded-3 img-cover" alt="<?php echo $item['nombre']; ?>" style="width: 85px; height: 85px;">
-                            
-                            <!-- Info Producto -->
-                            <div class="flex-grow-1">
-                                <h6 class="font-cinzel fw-bold text-carbon mb-1 fs-6"><?php echo $item['nombre']; ?></h6>
-                                <small class="text-secondary">Precio unitario: <span class="text-fuego fw-bold"><?php echo clp($item['precio_unitario']); ?></span></small>
-                            </div>
-                            
-                            <!-- Stepper de Cantidad -->
-                            <div class="input-group rounded-2" style="width: 105px;">
-                                <button class="btn btn-sm btn-outline-secondary font-bold" type="button">-</button>
-                                <input type="text" class="form-control form-control-sm text-center bg-white fw-bold" value="<?php echo $item['cantidad']; ?>" readonly>
-                                <button class="btn btn-sm btn-outline-secondary font-bold" type="button">+</button>
-                            </div>
-                            
-                            <!-- Subtotal -->
-                            <div class="fw-bold text-carbon fs-6 text-end px-2" style="min-width: 90px;">
-                                <?php echo clp($item['precio_unitario'] * $item['cantidad']); ?>
-                            </div>
-                            
-                            <!-- Eliminar -->
-                            <button class="btn btn-link text-danger p-1" type="button" title="Eliminar producto">
-                                <i class="fa fa-trash fs-5"></i>
-                            </button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                <div id="contenedor-items">
+                    <!-- Los items se cargan dinámicamente mediante JavaScript -->
+                </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-4">
                     <a href="menu.php" class="btn btn-outline-carbon btn-sm text-uppercase fw-bold"><i class="fa fa-arrow-left me-2"></i> Seguir Comprando</a>
@@ -95,20 +41,20 @@ $total = $subtotal + $envio;
                     
                     <div class="d-flex justify-content-between mb-3 text-secondary">
                         <span>Subtotal de productos</span>
-                        <span class="fw-bold text-carbon"><?php echo clp($subtotal); ?></span>
+                        <span class="fw-bold text-carbon" id="subtotal-txt">$0</span>
                     </div>
                     
                     <div class="d-flex justify-content-between mb-4 text-secondary">
                         <span>Envío estimado (Delivery)</span>
-                        <span class="fw-bold text-carbon"><?php echo clp($envio); ?></span>
+                        <span class="fw-bold text-carbon" id="envio-txt">$<?php echo number_format($envio, 0, ',', '.'); ?></span>
                     </div>
                     
                     <div class="d-flex justify-content-between mb-4 pt-3 border-top border-warning">
                         <h5 class="font-cinzel fw-bold text-carbon mb-0">Total</h5>
-                        <h5 class="font-cinzel fw-bold text-fuego mb-0"><?php echo clp($total); ?></h5>
+                        <h5 class="font-cinzel fw-bold text-fuego mb-0" id="total-txt">$0</h5>
                     </div>
                     
-                    <a href="entrega.php" class="btn btn-fuego w-100 rounded-3 text-uppercase fw-bold py-3 shadow">
+                    <a href="entrega.php" id="btn-continuar" class="btn btn-fuego w-100 rounded-3 text-uppercase fw-bold py-3 shadow">
                         Continuar a la Entrega <i class="fa fa-arrow-right ms-2"></i>
                     </a>
                 </aside>
@@ -118,3 +64,91 @@ $total = $subtotal + $envio;
 
     <!-- Footer -->
     <?php include 'footer.php'; ?>
+
+    <script src="carrito.js"></script>
+    <script>
+        const ENVIO_COST = <?php echo $envio; ?>;
+
+        function clp(valor) {
+            return '$' + new Intl.NumberFormat('es-CL').format(valor);
+        }
+
+        function renderCarrito() {
+            const items = CarritoStorage.obtener();
+            const contenedor = document.getElementById('contenedor-items');
+            const subtotalTxt = document.getElementById('subtotal-txt');
+            const totalTxt = document.getElementById('total-txt');
+            const btnContinuar = document.getElementById('btn-continuar');
+
+            if (items.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="card border-0 shadow-sm p-5 rounded-3 text-center bg-white mb-3">
+                        <i class="fa fa-shopping-basket text-muted fs-1 mb-3"></i>
+                        <h5 class="font-cinzel text-carbon fw-bold mb-2">Tu carrito está vacío</h5>
+                        <p class="text-secondary small mb-4">Aún no has agregado ningún plato de nuestro menú.</p>
+                        <div>
+                            <a href="menu.php" class="btn btn-fuego rounded-3 text-uppercase fw-bold px-4 py-2">Explorar el Menú</a>
+                        </div>
+                    </div>
+                `;
+                subtotalTxt.textContent = clp(0);
+                totalTxt.textContent = clp(0);
+                btnContinuar.classList.add('disabled');
+                return;
+            }
+
+            btnContinuar.classList.remove('disabled');
+            let subtotal = 0;
+            let html = '';
+
+            items.forEach((item, index) => {
+                const itemSubtotal = item.precio * item.cantidad;
+                subtotal += itemSubtotal;
+
+                html += `
+                    <div class="card border-0 shadow-sm mb-3 rounded-3 overflow-hidden p-3 bg-white">
+                        <div class="d-flex align-items-center flex-wrap gap-3">
+                            <img src="${item.img}" class="rounded-3 img-cover" alt="${item.nombre}" style="width: 85px; height: 85px; object-fit: cover;">
+                            
+                            <div class="flex-grow-1">
+                                <h6 class="font-cinzel fw-bold text-carbon mb-1 fs-6">${item.nombre}</h6>
+                                <small class="text-secondary">Precio unitario: <span class="text-fuego fw-bold">${clp(item.precio)}</span></small>
+                            </div>
+                            
+                            <div class="input-group rounded-2" style="width: 105px;">
+                                <button class="btn btn-sm btn-outline-secondary font-bold" type="button" onclick="modificarCantidad(${index}, -1)">-</button>
+                                <input type="text" class="form-control form-control-sm text-center bg-white fw-bold" value="${item.cantidad}" readonly>
+                                <button class="btn btn-sm btn-outline-secondary font-bold" type="button" onclick="modificarCantidad(${index}, 1)">+</button>
+                            </div>
+                            
+                            <div class="fw-bold text-carbon fs-6 text-end px-2" style="min-width: 90px;">
+                                ${clp(itemSubtotal)}
+                            </div>
+                            
+                            <button class="btn btn-link text-danger p-1 border-0" type="button" title="Eliminar producto" onclick="eliminarProducto(${index})">
+                                <i class="fa fa-trash fs-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            contenedor.innerHTML = html;
+            subtotalTxt.textContent = clp(subtotal);
+            totalTxt.textContent = clp(subtotal + ENVIO_COST);
+        }
+
+        function modificarCantidad(index, delta) {
+            CarritoStorage.modificarCantidad(index, delta);
+            renderCarrito();
+        }
+
+        function eliminarProducto(index) {
+            CarritoStorage.eliminar(index);
+            renderCarrito();
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCarrito);
+    </script>
+</body>
+</html>

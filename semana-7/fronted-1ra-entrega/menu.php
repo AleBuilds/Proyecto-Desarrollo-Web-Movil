@@ -19,9 +19,9 @@ $platos = [
     ['categoria' => 'parrilla',  'label' => 'PARRILLA',  'nombre' => 'Brochetas de Cordero Premium', 'precio' => 14500, 'img' => 'https://images.pexels.com/photos/2233729/pexels-photo-2233729.jpeg?auto=compress&cs=tinysrgb&w=600', 'desc' => 'Tiernas brochetas de cordero marinadas a las brasas con pimientos y cebollas.'],
     ['categoria' => 'pescados',  'label' => 'PESCADOS',  'nombre' => 'Pescado del Día',    'precio' => 12000, 'img' => 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=600', 'desc' => 'Filete de pescado a la plancha con finas hierbas y limón marroquí.'],
     ['categoria' => 'ensaladas', 'label' => 'ENSALADAS', 'nombre' => 'Ensalada Griega',    'precio' => 5500,  'img' => 'https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&cs=tinysrgb&w=600', 'desc' => 'Tomates frescos, pepino, aceitunas kalamata, cebolla morada y queso feta.'],
-    ['categoria' => 'hummus',    'label' => 'HUMMUS',    'nombre' => 'Hummus con Carne',   'precio' => 6800,  'img' => 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600', 'desc' => 'Hummus suave coronado con carne salteada de ternera y piñones tostados.'],
-    ['categoria' => 'falafel',   'label' => 'FALAFEL',   'nombre' => 'Falafel Plato',      'precio' => 7200,  'img' => 'https://images.pexels.com/photos/6287525/pexels-photo-6287525.jpeg?auto=compress&cs=tinysrgb&w=600', 'desc' => '8 piezas de falafel acompanadas de tabbouleh, hummus y pan pita caliente.'],
-    ['categoria' => 'shawarma',  'label' => 'SHAWARMA',  'nombre' => 'Shawarma Ternera',   'precio' => 7200,  'img' => 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=600', 'desc' => 'Cortes selectos de ternera especiada en pan lavash con parde de salsas.'],
+    ['categoria' => 'hummus',    'label' => 'HUMMUS',    'nombre' => 'Hummus con Carne',   'precio' => 6800,  'img' => 'https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?auto=compress&cs=tinysrgb&w=600', 'desc' => 'Hummus suave coronado con carne salteada de ternera y piñones tostados.'],
+    ['categoria' => 'falafel',   'label' => 'FALAFEL',   'nombre' => 'Falafel Plato',      'precio' => 7200,  'img' => 'https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg?auto=compress&cs=tinysrgb&w=600', 'desc' => '8 piezas de falafel acompanadas de tabbouleh, hummus y pan pita caliente.'],
+    ['categoria' => 'shawarma',  'label' => 'SHAWARMA',  'nombre' => 'Shawarma Ternera',   'precio' => 7200,  'img' => 'https://images.pexels.com/photos/299347/pexels-photo-299347.jpeg?auto=compress&cs=tinysrgb&w=600', 'desc' => 'Cortes selectos de ternera especiada en pan lavash con parde de salsas.'],
 ];
 
 function clp($valor) {
@@ -86,7 +86,7 @@ function clp($valor) {
                             
                             <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-auto">
                                 <span class="fw-bold text-fuego fs-5"><?php echo clp($p['precio']); ?></span>
-                                <a href="carrito.php" class="btn btn-fuego btn-sm text-uppercase px-3 fw-bold">Agregar</a>
+                                <button type="button" class="btn btn-fuego btn-sm text-uppercase px-3 fw-bold" onclick="CarritoStorage.agregar({nombre: '<?php echo addslashes($p['nombre']); ?>', precio: <?php echo $p['precio']; ?>, img: '<?php echo $p['img']; ?>'}); alert('¡Producto agregado al carrito!');">Agregar</button>
                             </div>
                         </div>
                     </article>
