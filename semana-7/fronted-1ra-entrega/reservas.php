@@ -2,10 +2,10 @@
 $activo = 'reservas';
 
 $reserva = [
-    'fecha'    => '14 Octubre, 2026',
-    'hora'     => '20:30 hrs',
-    'personas' => '4 Personas',
-    'nombre'   => 'Alejandro Pérez',
+    'fecha'    => '',
+    'hora'     => '',
+    'personas' => '',
+    'nombre'   => '',
 ];
 ?>
 <!DOCTYPE html>

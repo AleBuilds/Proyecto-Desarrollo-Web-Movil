@@ -33,8 +33,9 @@ $enlaces = [
             <a href="carrito.php" class="btn btn-fuego rounded-pill px-4 py-2 d-flex align-items-center gap-2 shadow-sm text-decoration-none">
                 <i class="fa fa-shopping-cart"></i>
                 <span class="d-none d-sm-inline">Carrito</span>
-                <span class="badge badge-fuego rounded-circle bg-white text-fuego px-2 py-1 fs-7">2</span>
+                <span class="badge badge-fuego carrito-badge rounded-circle bg-white text-fuego px-2 py-1 fs-7">0</span>
             </a>
         </div>
     </div>
 </nav>
+<script src="carrito.js"></script>
