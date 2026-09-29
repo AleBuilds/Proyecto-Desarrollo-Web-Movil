@@ -8,8 +8,6 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 VAULT_ADDR = os.getenv("VAULT_ADDR", "http://127.0.0.1:8200")
 VAULT_TOKEN = os.getenv("VAULT_TOKEN")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:9000")
-
-# El timeout global del gateway debe ser mayor al de sus dependencias (Vault).
 VAULT_TIMEOUT = 5.0
 BACKEND_TIMEOUT = 10.0
 
@@ -19,9 +17,10 @@ if not VAULT_TOKEN:
 app = FastAPI(title="El Mediterráneo - API Gateway")
 security = HTTPBearer(auto_error=False)
 
+RECURSOS_LECTURA_USUARIO = {"productos"}
+
 
 async def get_gateway_secrets() -> dict:
-    """Lee client_token y backend_secret desde Vault (KV v2, ruta secret/gateway)."""
     url = f"{VAULT_ADDR}/v1/secret/data/gateway"
     try:
         async with httpx.AsyncClient(timeout=VAULT_TIMEOUT) as client:
@@ -36,26 +35,42 @@ async def get_gateway_secrets() -> dict:
 async def authenticate_client(
     credentials: HTTPAuthorizationCredentials | None = Depends(security),
 ) -> dict:
-    """Autentica al cliente (front) comparando su token con el guardado en Vault."""
     if credentials is None:
         raise HTTPException(status_code=401, detail="Token requerido")
 
     vault_secrets = await get_gateway_secrets()
-    valid = secrets.compare_digest(
-        credentials.credentials, vault_secrets.get("client_token", "")
-    )
-    if not valid:
+    token = credentials.credentials
+
+    if secrets.compare_digest(token, vault_secrets.get("administrador_token", "")):
+        role, client_id = "administrador", "admin-client"
+    elif secrets.compare_digest(token, vault_secrets.get("usuario_token", "")):
+        role, client_id = "usuario", "student-client"
+    else:
         raise HTTPException(status_code=401, detail="Token inválido")
 
     return {
-        "client_id": "student-client",
+        "client_id": client_id,
+        "role": role,
         "backend_secret": vault_secrets["backend_secret"],
     }
 
 
+def autorizar(role: str, path: str, method: str) -> None:
+    if role == "administrador":
+        return
+
+    recurso = path.split("/", 1)[0]
+    if method == "GET" and recurso in RECURSOS_LECTURA_USUARIO:
+        return
+
+    raise HTTPException(
+        status_code=403,
+        detail="El rol 'usuario' solo puede consultar productos (GET)",
+    )
+
+
 @app.get("/health")
 async def health():
-    """Liveness del gateway; no requiere token ni consulta Vault."""
     return {"status": "ok", "servicio": "gateway"}
 
 
@@ -64,12 +79,15 @@ async def proxy(path: str, request: Request, auth: dict = Depends(authenticate_c
     if ".." in path.split("/"):
         raise HTTPException(status_code=400, detail="Ruta inválida")
 
+    autorizar(auth["role"], path, request.method)
+
     target_url = f"{BACKEND_URL}/{path}"
     body = await request.body()
 
     headers = {
         "X-Gateway-Secret": auth["backend_secret"],
         "X-Client-Id": auth["client_id"],
+        "X-Client-Role": auth["role"],
     }
     content_type = request.headers.get("content-type")
     if content_type:
