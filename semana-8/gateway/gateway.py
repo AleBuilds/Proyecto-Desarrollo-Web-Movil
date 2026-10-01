@@ -17,8 +17,6 @@ if not VAULT_TOKEN:
 app = FastAPI(title="El Mediterráneo - API Gateway")
 security = HTTPBearer(auto_error=False)
 
-RECURSOS_LECTURA_USUARIO = {"productos"}
-
 
 async def get_gateway_secrets() -> dict:
     url = f"{VAULT_ADDR}/v1/secret/data/gateway"
@@ -59,15 +57,13 @@ def autorizar(role: str, path: str, method: str) -> None:
     if role == "administrador":
         return
 
-    recurso = path.split("/", 1)[0]
-    if method == "GET" and recurso in RECURSOS_LECTURA_USUARIO:
+    if role == "usuario" and method == "GET" and path == "productos":
         return
 
     raise HTTPException(
         status_code=403,
-        detail="El rol 'usuario' solo puede consultar productos (GET)",
+        detail="El rol no tiene permisos para realizar esta operación",
     )
-
 
 @app.get("/health")
 async def health():
