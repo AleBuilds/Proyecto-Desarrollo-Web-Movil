@@ -25,5 +25,5 @@ Abrir "Backend :9000" "$raiz\backend" "`$env:INTERNAL_GATEWAY_SECRET='gateway-ap
 Abrir "Gateway :8000" "$raiz\gateway" "`$env:VAULT_ADDR='http://127.0.0.1:8200'; `$env:VAULT_TOKEN='dev-only-token'; `$env:BACKEND_URL='http://127.0.0.1:9000'; `$env:AUTH_URL='http://127.0.0.1:8100'; & '$py' -m uvicorn gateway:app --host 127.0.0.1 --port 8000"
 
 Write-Host ""
-Write-Host "Listo. Abre http://localhost:8000 (ana / 1234  o  ernesto / admin123)."
+Write-Host "Listo. Abre http://localhost:8000 (ana / 1234  o  administrador1 / admin123)."
 Write-Host "Pruebas: .venv\Scripts\python.exe -m pytest tests -q   y   .venv\Scripts\python.exe -m pytest e2e\test_stack.py -q"

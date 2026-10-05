@@ -39,7 +39,7 @@ def test_secreto_con_caracteres_no_ascii_es_403_y_no_500():
 
 
 def test_headers_de_identidad_sin_secreto_no_sirven():
-    falsos = {"X-Authenticated-User": "USR-003", "X-Authenticated-Username": "ernesto", "X-Authenticated-Roles": "user,admin"}
+    falsos = {"X-Authenticated-User": "USR-003", "X-Authenticated-Username": "administrador1", "X-Authenticated-Roles": "user,admin"}
     assert client.delete("/products/1", headers=falsos).status_code == 403
     assert len(backend_api.PRODUCTS) == 9
 
@@ -60,7 +60,7 @@ def test_rol_user_no_puede_eliminar_productos():
 
 
 def test_rol_admin_puede_eliminar_productos():
-    r = client.delete("/products/1", headers=como("ernesto", "user,admin"))
+    r = client.delete("/products/1", headers=como("administrador1", "user,admin"))
     assert r.status_code == 200 and r.json()["deleted"] == 1
     assert all(p["id"] != 1 for p in backend_api.PRODUCTS)
-    assert client.delete("/products/1", headers=como("ernesto", "user,admin")).status_code == 404
+    assert client.delete("/products/1", headers=como("administrador1", "user,admin")).status_code == 404

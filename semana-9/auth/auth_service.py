@@ -40,14 +40,14 @@ def verify_password(password: str, almacenado: str) -> bool:
     return hmac.compare_digest(derivada, esperada)
 
 
-# Usuarios simulados (contraseñas: ana -> 1234, ernesto -> admin123). Solo se guarda el hash.
+# Usuarios simulados (contraseñas: ana -> 1234, administrador1 -> admin123). Solo se guarda el hash.
 USERS = {
     "ana": {
         "user_id": "USR-001",
         "password_hash": "scrypt$16384$8$1$539355c655133337e84eb3cbc31d6fdf$d34fc116a55e1c47569ef2bba40e04258ee5a9523ac2c1e87587c54f267fd174",
         "roles": ["user"],
     },
-    "ernesto": {
+    "administrador1": {
         "user_id": "USR-003",
         "password_hash": "scrypt$16384$8$1$e6309ed0eee01f72b8fc45c91e522490$65a971106ba86842b54ddb132e24920c6770b509b4f7f76d8ccda6015199f96d",
         "roles": ["user", "admin"],

@@ -80,8 +80,8 @@ def test_flujo_completo_de_ana():
 
 
 # E. Administrador
-def test_ernesto_puede_eliminar_productos():
-    c, _ = iniciar_sesion("ernesto", "admin123")
+def test_administrador1_puede_eliminar_productos():
+    c, _ = iniciar_sesion("administrador1", "admin123")
     assert c.get("/auth/me").json()["roles"] == ["user", "admin"]
     r = c.delete("/api/products/3")
     # 200 la primera vez; 404 si ya se eliminó en una corrida anterior (el backend guarda en memoria).
@@ -107,6 +107,6 @@ def nuevo_cliente_con(token):
 # Identidad: el cliente no puede falsificarla
 def test_headers_de_identidad_falsos_no_cambian_el_rol():
     c, _ = iniciar_sesion("ana", "1234")
-    r = c.delete("/api/products/2", headers={"X-Authenticated-Roles": "admin", "X-Authenticated-Username": "ernesto"})
+    r = c.delete("/api/products/2", headers={"X-Authenticated-Roles": "admin", "X-Authenticated-Username": "administrador1"})
     assert r.status_code == 403
     c.post("/auth/logout")

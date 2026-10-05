@@ -94,7 +94,7 @@ const VISTAS = {
 
     login: () => `<h2>Ingresar</h2><div class="panel"><form id="f-login"><label>Usuario<input name="username" autocomplete="username" required></label>
         <label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Entrar</button></form>
-        <p><small>Demo: <code>ana / 1234</code> (cliente) · <code>ernesto / admin123</code> (admin)</small></p></div>`,
+        <p><small>Demo: <code>ana / 1234</code> (cliente) · <code>administrador1 / admin123</code> (admin)</small></p></div>`,
 };
 
 function nav() {

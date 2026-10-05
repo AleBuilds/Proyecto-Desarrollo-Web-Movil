@@ -8,7 +8,7 @@ import gateway
 SECRETOS = {"backend_shared_secret": "gateway-api-secret-456", "auth_introspection_secret": "gateway-auth-secret-789"}
 SESIONES = {
     "tok-ana": {"active": True, "user_id": "USR-001", "username": "ana", "roles": ["user"]},
-    "tok-ernesto": {"active": True, "user_id": "USR-003", "username": "ernesto", "roles": ["user", "admin"]},
+    "tok-administrador1": {"active": True, "user_id": "USR-003", "username": "administrador1", "roles": ["user", "admin"]},
 }
 
 
@@ -96,9 +96,9 @@ def test_me_sin_cookie_es_401(stack):
 
 
 def test_me_con_sesion_valida(stack):
-    stack.cookies.set("session_token", "tok-ernesto")
+    stack.cookies.set("session_token", "tok-administrador1")
     r = stack.get("/auth/me")
-    assert r.status_code == 200 and r.json() == {"user_id": "USR-003", "username": "ernesto", "roles": ["user", "admin"]}
+    assert r.status_code == 200 and r.json() == {"user_id": "USR-003", "username": "administrador1", "roles": ["user", "admin"]}
 
 
 def test_cookie_revocada_o_inventada_es_401(stack):
@@ -164,21 +164,21 @@ def test_user_no_puede_eliminar_y_la_peticion_no_llega_al_backend(stack):
 
 
 def test_admin_elimina_producto(stack):
-    stack.cookies.set("session_token", "tok-ernesto")
+    stack.cookies.set("session_token", "tok-administrador1")
     assert stack.delete("/api/products/1").status_code == 200
     assert stack.llamadas["backend"][0]["method"] == "DELETE"
 
 
 def test_headers_de_identidad_enviados_por_el_cliente_no_se_reenvian(stack):
     stack.cookies.set("session_token", "tok-ana")
-    stack.get("/api/products", headers={"X-Authenticated-Roles": "admin", "X-Authenticated-Username": "ernesto", "Authorization": "Bearer x"})
+    stack.get("/api/products", headers={"X-Authenticated-Roles": "admin", "X-Authenticated-Username": "administrador1", "Authorization": "Bearer x"})
     enviado = stack.llamadas["backend"][0]["headers"]
     assert enviado["X-Authenticated-Roles"] == "user" and enviado["X-Authenticated-Username"] == "ana"
     assert "Authorization" not in enviado and "Cookie" not in enviado
 
 
 def test_ruta_con_puntos_es_rechazada(stack):
-    stack.cookies.set("session_token", "tok-ernesto")
+    stack.cookies.set("session_token", "tok-administrador1")
     assert stack.get("/api/products/%2e%2e/orders").status_code in (400, 403)
     assert stack.llamadas["backend"] == []
 

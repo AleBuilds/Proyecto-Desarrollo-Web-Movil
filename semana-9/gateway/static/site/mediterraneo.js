@@ -82,6 +82,7 @@
 
         entrega() {
             const f = $('form'), metodo = location.pathname.includes('retiro') ? 'retiro' : 'delivery';
+            if (metodo === 'retiro') { const d = $('#direccion'); d.required = false; d.closest('.col-md-6').hidden = true; }  // retiro: no hay dirección de entrega
             f.addEventListener('submit', async (ev) => {
                 ev.preventDefault();
                 const v = Object.fromEntries(new FormData(f)), items = leer().map(({ id, cantidad }) => ({ id, cantidad }));
@@ -99,7 +100,7 @@
             if (!p) { location.replace('/carrito.html'); return; }
             const n = p.items.reduce((s, i) => s + i.cantidad, 0), set = (k, t) => { const e = $(`[data-pedido="${k}"]`); if (e) e.textContent = t; };
             set('numero', p.id); set('cantidad', `${n} producto${n === 1 ? '' : 's'}`); set('total', clp(p.total));
-            set('metodo', p.metodo === 'retiro' ? 'Retiro en Local' : 'Despacho a Domicilio'); set('tiempo', p.metodo === 'retiro' ? '15 - 20 min' : '30 - 45 min');
+            set('metodo_entrega', p.metodo === 'retiro' ? 'Retiro en Local' : 'Despacho a Domicilio'); set('tiempo_estimado', p.metodo === 'retiro' ? '15 - 20 min' : '30 - 45 min');
         },
 
         reservas() {

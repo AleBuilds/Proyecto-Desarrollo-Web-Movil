@@ -1,6 +1,0 @@
-fastapi
-uvicorn[standard]
-httpx
-pytest
-# Solo para las pruebas de navegador (e2e/test_frontend.py):
-# pytest-playwright

@@ -35,7 +35,7 @@ def carta():
 
 
 def entrar(page: Page, usuario: str, password: str, esperar: bool = True):
-    page.goto(f"{BASE}/#/login")
+    page.goto(f"{BASE}/panel#/login")
     page.fill("input[name=username]", usuario)
     page.fill("input[name=password]", password)
     page.click("#f-login button[type=submit]")
@@ -44,7 +44,7 @@ def entrar(page: Page, usuario: str, password: str, esperar: bool = True):
 
 
 def test_carta_publica_sin_sesion(page: Page, errores):
-    page.goto(f"{BASE}/#/menu")
+    page.goto(f"{BASE}/panel#/menu")
     productos = carta()  # el backend guarda en memoria: otras pruebas pueden haber eliminado platos
     expect(page.locator(".card")).to_have_count(len(productos))
     page.click("text=Hummus >> nth=0")  # filtro por categoría
@@ -54,10 +54,10 @@ def test_carta_publica_sin_sesion(page: Page, errores):
 
 def test_cliente_pide_reserva_y_no_ve_admin(page: Page, errores):
     primero = carta()[0]
-    page.goto(f"{BASE}/#/menu")
+    page.goto(f"{BASE}/panel#/menu")
     page.click("button[data-agregar] >> nth=0")
     expect(page.locator("#nav")).to_contain_text("Carrito (1)")
-    page.goto(f"{BASE}/#/carrito")
+    page.goto(f"{BASE}/panel#/carrito")
     expect(page.locator("#vista")).to_contain_text("Inicia sesión")  # sin sesión no se confirma
 
     entrar(page, "ana", "1234")
@@ -68,7 +68,7 @@ def test_cliente_pide_reserva_y_no_ve_admin(page: Page, errores):
     cookie = next(c for c in page.context.cookies() if c["name"] == "session_token")
     assert cookie["httpOnly"] is True
 
-    page.goto(f"{BASE}/#/carrito")
+    page.goto(f"{BASE}/panel#/carrito")
     page.select_option("select[name=metodo]", "delivery")
     page.fill("input[name=nombre]", "Ana Pérez")
     page.fill("input[name=telefono]", "+56912345678")
@@ -78,7 +78,7 @@ def test_cliente_pide_reserva_y_no_ve_admin(page: Page, errores):
     total = f"{primero['precio'] + 2500:,}".replace(",", ".")  # primer plato + envío del delivery
     expect(page.locator("#vista")).to_contain_text(f"Total ${total}")
 
-    page.goto(f"{BASE}/#/reservas")
+    page.goto(f"{BASE}/panel#/reservas")
     page.fill("input[name=fecha]", "2026-10-14")
     page.fill("input[name=hora]", "20:30")
     page.fill("input[name=personas]", "4")
@@ -88,7 +88,7 @@ def test_cliente_pide_reserva_y_no_ve_admin(page: Page, errores):
     expect(page.locator("#aviso")).to_contain_text("Reserva confirmada")
 
     expect(page.locator("#nav a", has_text="Admin")).to_have_count(0)
-    page.goto(f"{BASE}/#/admin")
+    page.goto(f"{BASE}/panel#/admin")
     expect(page.locator("#vista")).to_contain_text("403")
 
     page.click("button[data-salir]")
@@ -104,8 +104,8 @@ def test_login_incorrecto(page: Page):
 
 
 def test_admin_gestiona_la_carta(page: Page, errores):
-    entrar(page, "ernesto", "admin123")
-    page.goto(f"{BASE}/#/admin")
+    entrar(page, "administrador1", "admin123")
+    page.goto(f"{BASE}/panel#/admin")
     page.fill("#f-plato input[name=nombre]", "Dorada a la sal")
     page.fill("#f-plato input[name=precio]", "13500")
     page.click("#f-plato button[type=submit]")
@@ -114,4 +114,37 @@ def test_admin_gestiona_la_carta(page: Page, errores):
     page.click("div.fila:has-text('Dorada a la sal') button")
     expect(page.locator("#aviso")).to_contain_text("Plato eliminado")
     expect(page.locator("#vista")).not_to_contain_text("Dorada a la sal")
+    assert errores == []
+
+
+# ---------- sitio HTML convertido desde PHP (semana-7), servido por el Gateway ----------
+PAGINAS_SITIO = ["", "menu", "carrito", "entrega", "entrega-retiro", "confirmacion", "reservas", "contacto", "nosotros", "producto"]
+
+
+def test_sitio_html_sin_php_y_sin_errores(page: Page, errores):
+    page.on("dialog", lambda d: d.accept())
+    for p in PAGINAS_SITIO:
+        r = page.goto(f"{BASE}/{p + '.html' if p else ''}")
+        assert r.status == 200, p
+        assert ".php" not in page.content(), p
+    assert errores == []
+
+
+def test_sitio_html_pedido_completo(page: Page, errores):
+    page.on("dialog", lambda d: d.accept())
+    page.goto(f"{BASE}/menu.html")
+    expect(page.locator(".card")).to_have_count(len(carta()))
+    page.click("button[data-agregar] >> nth=0")
+    expect(page.locator(".carrito-badge").first).to_have_text("1")
+
+    entrar(page, "ana", "1234")  # el login vive en el panel; la cookie sirve también para el sitio
+    page.goto(f"{BASE}/entrega-retiro.html")
+    expect(page.locator("#direccion")).to_be_hidden()  # en retiro no se pide dirección (el JS lo aplica al terminar de cargar)
+    page.fill("input[name=nombre]", "Ana Pérez")
+    page.fill("input[name=telefono]", "+56912345678")
+    page.fill("input[name=email]", "ana@correo.cl")
+    page.click("form button[type=submit]")
+    page.wait_for_url(re.compile(r"/confirmacion\.html"))
+    expect(page.locator("[data-pedido=numero]")).to_have_text(re.compile(r"\d{4}"))
+    expect(page.locator("[data-pedido=metodo_entrega]")).to_have_text("Retiro en Local")
     assert errores == []

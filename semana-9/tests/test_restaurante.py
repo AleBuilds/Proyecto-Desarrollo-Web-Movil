@@ -45,7 +45,7 @@ def test_cada_cliente_ve_solo_sus_pedidos_y_el_admin_todos():
     client.post("/orders", json=PEDIDO, headers=como())
     otro = como("USR-009", "luis")
     assert client.get("/orders", headers=otro).json()["orders"] == []
-    admin = como("USR-003", "ernesto", "user,admin")
+    admin = como("USR-003", "administrador1", "user,admin")
     assert len(client.get("/orders", headers=admin).json()["orders"]) == 1
 
 
@@ -54,5 +54,5 @@ def test_reservas_y_creacion_de_platos_solo_admin():
     assert client.post("/reservations", json=reserva, headers=como()).status_code == 201
     nuevo = {"categoria": "pescados", "nombre": "Dorada", "precio": 13000}
     assert client.post("/products", json=nuevo, headers=como()).status_code == 403
-    assert client.post("/products", json=nuevo, headers=como("USR-003", "ernesto", "user,admin")).status_code == 201
-    assert client.post("/products", json={**nuevo, "img": "javascript:alert(1)"}, headers=como("USR-003", "ernesto", "user,admin")).status_code == 422
+    assert client.post("/products", json=nuevo, headers=como("USR-003", "administrador1", "user,admin")).status_code == 201
+    assert client.post("/products", json={**nuevo, "img": "javascript:alert(1)"}, headers=como("USR-003", "administrador1", "user,admin")).status_code == 422

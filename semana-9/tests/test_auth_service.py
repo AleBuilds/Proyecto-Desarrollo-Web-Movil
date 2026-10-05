@@ -51,8 +51,8 @@ def test_introspection_de_token_valido():
     assert r.json() == {"active": True, "user_id": "USR-001", "username": "ana", "roles": ["user"]}
 
 
-def test_ernesto_tiene_rol_admin():
-    token = login("ernesto", "admin123").json()["access_token"]
+def test_administrador1_tiene_rol_admin():
+    token = login("administrador1", "admin123").json()["access_token"]
     r = client.post("/introspect", json={"token": token}, headers=SECRETO).json()
     assert r["roles"] == ["user", "admin"] and r["user_id"] == "USR-003"
 
