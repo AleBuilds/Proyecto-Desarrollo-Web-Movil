@@ -1,5 +1,6 @@
 """API Gateway (:8000): valida la sesión (cookie), autoriza por rol, enruta y propaga identidad."""
 import os
+import re
 from pathlib import Path
 
 import httpx
@@ -21,9 +22,13 @@ BACKEND_TIMEOUT = 10.0
 if not VAULT_TOKEN:
     raise RuntimeError("VAULT_TOKEN no está configurado")
 
-CSP = ("default-src 'self'; img-src 'self' https://images.pexels.com data:; "
-       "style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com")
+# CSP estricto (sin 'unsafe-inline'): solo se agregan los hosts que necesita el diseño antiguo (Bootstrap, Font Awesome, fotos).
+CSP = ("default-src 'self'; img-src 'self' https://images.pexels.com https://images.unsplash.com data:; "
+       "script-src 'self' https://cdn.jsdelivr.net; "
+       "style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+       "font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com")
 STATIC_DIR = Path(__file__).parent / "static"
+SITE_DIR = STATIC_DIR / "site"  # frontend antiguo convertido con construir_frontend.py
 app = FastAPI(title="API Gateway")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -133,10 +138,27 @@ async def health():
     return {"status": "ok", "servicio": "gateway"}
 
 
+def _html(ruta: Path) -> HTMLResponse:
+    return HTMLResponse(ruta.read_text(encoding="utf-8"), headers={"Content-Security-Policy": CSP, "Cache-Control": "no-store"})
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
-    return HTMLResponse(html, headers={"Content-Security-Policy": CSP, "Cache-Control": "no-store"})
+    inicio = SITE_DIR / "index.html"  # sitio antiguo; si aún no se construyó, cae al panel
+    return _html(inicio if inicio.is_file() else STATIC_DIR / "index.html")
+
+
+@app.get("/panel", response_class=HTMLResponse)
+async def panel():
+    """Login, pedidos y administración (semana 9)."""
+    return _html(STATIC_DIR / "index.html")
+
+
+@app.get("/{pagina}.html", response_class=HTMLResponse)
+async def pagina_sitio(pagina: str):
+    if not re.fullmatch(r"[a-z-]+", pagina) or not (SITE_DIR / f"{pagina}.html").is_file():
+        raise HTTPException(status_code=404, detail="Página no encontrada")
+    return _html(SITE_DIR / f"{pagina}.html")
 
 
 @app.post("/auth/login")

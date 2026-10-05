@@ -100,7 +100,7 @@ const VISTAS = {
 function nav() {
     const ruta = location.hash.split("/")[1] || "inicio";
     const l = (id, txt) => `<a href="#/${id === "inicio" ? "" : id}" class="${ruta === id ? "activo" : ""}">${txt}</a>`;
-    $("#nav").innerHTML = `<a class="logo" href="#/">EL MEDITERRÁNEO</a>${l("inicio", "Inicio")}${l("menu", "Menú")}${l("reservas", "Reservas")}
+    $("#nav").innerHTML = `<a class="logo" href="#/">EL MEDITERRÁNEO</a><a href="/">← Sitio</a>${l("inicio", "Inicio")}${l("menu", "Menú")}${l("reservas", "Reservas")}
         ${user ? l("pedidos", "Pedidos") : ""}${esAdmin() ? l("admin", "Admin") : ""}${l("carrito", `Carrito (${carrito.total()})`)}
         ${user ? `<span class="usuario">${esc(user.username)}</span><button class="sec" data-salir>Salir</button>` : l("login", "Ingresar")}`;
 }
