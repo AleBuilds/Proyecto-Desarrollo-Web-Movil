@@ -52,12 +52,14 @@ async def authenticate_client(
         "backend_secret": vault_secrets["backend_secret"],
     }
 
+RECURSOS_LECTURA_USUARIO = {"productos"}
 
 def autorizar(role: str, path: str, method: str) -> None:
     if role == "administrador":
         return
 
-    if role == "usuario" and method == "GET" and path == "productos":
+    recurso = path.split("/", 1)[0]
+    if role == "usuario" and method == "GET" and recurso in RECURSOS_LECTURA_USUARIO:
         return
 
     raise HTTPException(
