@@ -1,14 +1,3 @@
-﻿"""Productor STOMP - Semana 12 (El Mediterraneo).
-
-Envia un pedido (id, cliente, monto) a la cola /queue/pedidos de ActiveMQ en uno
-de cuatro formatos de intercambio: texto, fijo (ancho fijo), xml o json.
-
-Ejemplos:
-  python productor.py --formato texto --mensaje "Hola mundo Stomp"
-  python productor.py --formato fijo --id 123 --cliente "Ana" --monto 123.45
-  python productor.py --formato xml  --id 123 --cliente "Ana" --monto 123.45
-  python productor.py --formato json --id 123 --cliente "Ana" --monto 123.45
-"""
 import argparse
 import json
 import xml.etree.ElementTree as ET
@@ -55,7 +44,7 @@ def main():
     parser.add_argument("--formato", choices=["texto", "fijo", "xml", "json"], required=True)
     parser.add_argument("--mensaje", default="Hola desde el productor STOMP")
     parser.add_argument("--id", default="123")
-    parser.add_argument("--cliente", default="Ana")
+    parser.add_argument("--cliente", default="Ed Jobs")
     parser.add_argument("--monto", default="123.45")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=61613)
