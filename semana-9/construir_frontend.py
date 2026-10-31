@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""Convierte el frontend antiguo (semana-7, PHP) a HTML estático que sirve el Gateway.
-
-Uso (desde semana-9):  python construir_frontend.py
-No necesita PHP. Los estilos y onclick en línea se sacan a archivos para mantener el CSP estricto.
-"""
 import datetime
 import re
 import shutil
@@ -103,8 +97,6 @@ def navbar(activo):
     html = html.replace('<script src="carrito.js"></script>', "")
     return html.replace('<a href="carrito.php"', '<span id="cuenta" class="me-3 small text-nowrap"></span>\n            <a href="carrito.php"', 1)
 
-
-# ---------- transformaciones ----------
 ESTILOS = {}
 
 

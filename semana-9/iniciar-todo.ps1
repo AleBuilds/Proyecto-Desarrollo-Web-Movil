@@ -1,5 +1,3 @@
-# Levanta Vault, Auth Service, Backend y Gateway, cada uno en su propia ventana (sin Docker).
-# Uso:  .\iniciar-todo.ps1
 $raiz = $PSScriptRoot
 $py = Join-Path $raiz ".venv\Scripts\python.exe"
 
