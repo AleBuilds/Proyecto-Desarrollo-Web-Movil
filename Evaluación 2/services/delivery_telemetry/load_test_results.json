@@ -1,0 +1,14 @@
+{
+  "entorno": "Local Windows 64-bit (FastAPI/gRPC)",
+  "protocolo": "gRPC sobre HTTP/2 (Protobuf tipado)",
+  "total_peticiones": 500,
+  "concurrencia": 10,
+  "duracion_segundos": 0.281,
+  "throughput_req_sec": 1776.9,
+  "errores": 0,
+  "tasa_exito_porcentaje": 100.0,
+  "latencia_promedio_ms": 5.32,
+  "latencia_p50_ms": 4.62,
+  "latencia_p95_ms": 6.9,
+  "latencia_p99_ms": 30.08
+}

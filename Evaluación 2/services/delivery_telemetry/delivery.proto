@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package elmediterraneo.delivery;
+
+// Mensajes para actualización de ubicación de despacho (Unary)
+message LocationUpdate {
+    int32 order_id = 1;
+    string repartidor_id = 2;
+    double latitud = 3;
+    double longitud = 4;
+    float velocidad_kmh = 5;
+    string timestamp = 6;
+}
+
+message LocationResponse {
+    bool recibido = 1;
+    string mensaje = 2;
+    string tiempo_servidor = 3;
+}
+
+// Mensajes para streaming de seguimiento de pedido en vivo (Server Streaming)
+message TrackingRequest {
+    int32 order_id = 1;
+    string client_token = 2;
+}
+
+message TrackingEvent {
+    int32 order_id = 1;
+    string etapa = 2; // "en_preparacion", "en_camino", "llegando", "entregado"
+    double latitud = 3;
+    double longitud = 4;
+    int32 minutos_estimados = 5;
+    int32 secuencia = 6;
+    string timestamp = 7;
+}
+
+// Mensajes para analítica operativa de cocina y despacho (Módulo 9)
+message KitchenMetricsRequest {
+    int32 ventana_minutos = 1;
+}
+
+message KitchenMetricsResponse {
+    int32 total_pedidos_activos = 1;
+    float tiempo_promedio_cocina_min = 2;
+    float throughput_pedidos_hora = 3;
+    float latencia_p95_ms = 4;
+    int32 despachos_en_ruta = 5;
+}
+
+service DeliveryTelemetryService {
+    // Unary: registro periódico y masivo de telemetría GPS del móvil de reparto
+    rpc RegisterLocation (LocationUpdate) returns (LocationResponse);
+
+    // Server Streaming: emisión continua de eventos de seguimiento hacia el Gateway
+    rpc StreamOrderTracking (TrackingRequest) returns (stream TrackingEvent);
+
+    // Unary: consulta de analítica y métricas de alta concurrencia
+    rpc GetKitchenMetrics (KitchenMetricsRequest) returns (KitchenMetricsResponse);
+}
