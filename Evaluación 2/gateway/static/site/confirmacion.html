@@ -75,9 +75,16 @@
             </div>
         </div>
 
+        <!-- Resumen agregado por el GraphQL Gateway (Orders + Inventory + Clients) -->
+        <div id="resumen-gql" class="st6 card border-0 shadow-sm p-4 rounded-3 bg-white w-100 text-start mb-4" hidden>
+            <h5 class="font-cinzel fw-bold text-carbon mb-1"><i class="fa fa-shield me-2 text-fuego"></i>Resumen verificado por el servidor</h5>
+            <p class="small text-secondary mb-3">Consulta GraphQL que combina <strong>orders</strong> (pedido), <strong>inventory</strong> (categoría) y <strong>clients</strong> (titular).</p>
+            <div id="resumen-gql-cuerpo"></div>
+        </div>
+
         <!-- Botones de Acción -->
         <div class="st6 d-flex flex-column flex-sm-row gap-3 w-100 justify-content-center">
-            <a href="/carrito.html" class="btn btn-fuego text-uppercase fw-bold py-3 flex-grow-1 shadow rounded-3">
+            <a href="/panel#/pedidos" class="btn btn-fuego text-uppercase fw-bold py-3 flex-grow-1 shadow rounded-3">
                 <i class="fa fa-list-alt me-2"></i> Ver Mis Pedidos
             </a>
             <a href="/" class="btn btn-outline-carbon text-uppercase fw-bold py-3 flex-grow-1 rounded-3">

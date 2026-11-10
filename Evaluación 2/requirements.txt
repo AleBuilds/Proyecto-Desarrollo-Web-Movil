@@ -7,3 +7,4 @@ strawberry-graphql>=0.240.0
 grpcio>=1.66.0
 grpcio-tools>=1.66.0
 pytest>=8.0.0
+psutil>=5.9.0

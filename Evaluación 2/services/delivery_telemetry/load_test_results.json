@@ -1,14 +1,24 @@
 {
-  "entorno": "Local Windows 64-bit (FastAPI/gRPC)",
+  "tipo": "MEDICION local reproducible (no es una proyeccion)",
+  "entorno": "Windows 10 / Python 3.12.2 / 4 CPU logicas",
   "protocolo": "gRPC sobre HTTP/2 (Protobuf tipado)",
-  "total_peticiones": 500,
+  "total_peticiones": 3000,
   "concurrencia": 10,
-  "duracion_segundos": 0.281,
-  "throughput_req_sec": 1776.9,
+  "duracion_segundos": 2.057,
+  "throughput_req_sec": 1458.5,
   "errores": 0,
   "tasa_exito_porcentaje": 100.0,
-  "latencia_promedio_ms": 5.32,
-  "latencia_p50_ms": 4.62,
-  "latencia_p95_ms": 6.9,
-  "latencia_p99_ms": 30.08
+  "latencia_promedio_ms": 6.76,
+  "latencia_p50_ms": 6.37,
+  "latencia_p95_ms": 7.95,
+  "latencia_p99_ms": 9.47,
+  "servidor_cpu_pct_promedio": 165.0,
+  "servidor_cpu_pct_max": 182.1,
+  "servidor_memoria_mb_max": 33.5,
+  "objetivos": {
+    "throughput_min_req_s": 50,
+    "p95_max_ms": 10.0,
+    "errores_max": 0
+  },
+  "cumple_objetivos": true
 }

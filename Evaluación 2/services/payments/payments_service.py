@@ -12,7 +12,8 @@ from pydantic import BaseModel, Field
 
 from db_payments import get_connection, init_db, reset_test_data
 
-INTERNAL_SERVICE_SECRET = os.getenv("INTERNAL_SERVICE_SECRET", "gateway-api-secret-456")
+# Credencial propia de payments: solo `orders` la posee (el gateway no puede invocar este servicio).
+PAYMENTS_SERVICE_SECRET = os.environ["PAYMENTS_SERVICE_SECRET"]
 
 
 @asynccontextmanager
@@ -26,7 +27,7 @@ app = FastAPI(title="Payments Microservice - El Mediterráneo", lifespan=lifespa
 
 def verify_internal_secret(x_internal_secret: str | None = Header(default=None)):
     if x_internal_secret is None or not secrets.compare_digest(
-        x_internal_secret.encode("utf-8"), INTERNAL_SERVICE_SECRET.encode("utf-8")
+        x_internal_secret.encode("utf-8"), PAYMENTS_SERVICE_SECRET.encode("utf-8")
     ):
         raise HTTPException(status_code=403, detail="Acceso no autorizado al servicio privado payments")
 

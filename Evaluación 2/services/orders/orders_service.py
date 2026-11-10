@@ -14,7 +14,8 @@ from pydantic import BaseModel, Field
 
 from db_orders import get_connection, init_db, reset_test_data
 
-INTERNAL_SERVICE_SECRET = os.getenv("INTERNAL_SERVICE_SECRET", "gateway-api-secret-456")
+INTERNAL_SERVICE_SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
+PAYMENTS_SERVICE_SECRET = os.environ["PAYMENTS_SERVICE_SECRET"]  # credencial orders -> payments
 INVENTORY_URL = os.getenv("INVENTORY_URL", "http://127.0.0.1:9001")
 PAYMENTS_URL = os.getenv("PAYMENTS_URL", "http://127.0.0.1:9004")
 ENVIO_COSTO = 2500
@@ -74,8 +75,19 @@ class ReservaIn(BaseModel):
     telefono: str = Field(min_length=6, max_length=20)
 
 
+# Máquina de estados del pedido: solo estas transiciones son válidas.
+TRANSICIONES: dict[str, set[str]] = {
+    "pending": {"confirmed", "cancelled"},          # pago pendiente -> pagado o anulado
+    "confirmed": {"in_preparation", "cancelled"},
+    "in_preparation": {"dispatched", "cancelled"},
+    "dispatched": {"completed"},
+    "completed": set(),
+    "cancelled": set(),
+}
+
+
 class EstadoUpdateIn(BaseModel):
-    status: Literal["pending", "in_preparation", "dispatched", "completed", "cancelled"]
+    status: Literal["confirmed", "in_preparation", "dispatched", "completed", "cancelled"]
 
 
 @app.get("/health")
@@ -140,7 +152,7 @@ async def create_order(
     # 4. Persistencia en dbOrders.sqlite
     cur.execute(
         """INSERT INTO orders (user_id, username, metodo, nombre, telefono, direccion, notas, subtotal, envio, total, status, idempotency_key)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', ?)""",
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)""",
         (
             ident["user_id"],
             ident["username"],
@@ -163,17 +175,20 @@ async def create_order(
             (pedido_id, it["id"], it["nombre"], it["precio"], it["cantidad"]),
         )
 
-    # 5. Coordinación con Payments: Registro de transacción inicial
+    # 5. Coordinación con Payments: el estado depende del resultado REAL del cobro (nunca del navegador)
+    estado = "pending"  # pago pendiente si payments no responde o rechaza; el stock queda reservado
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
-            await client.post(
+            r_pago = await client.post(
                 f"{PAYMENTS_URL}/payments/process",
                 json={"order_id": pedido_id, "user_id": ident["user_id"], "monto": total, "metodo_pago": "webpay"},
-                headers={"X-Internal-Secret": INTERNAL_SERVICE_SECRET},
+                headers={"X-Internal-Secret": PAYMENTS_SERVICE_SECRET},
             )
-    except httpx.RequestError:
-        # Registro degradado controlado
-        pass
+        if r_pago.status_code in (200, 201) and r_pago.json().get("status") in ("approved", "already_processed"):
+            estado = "confirmed"
+    except (httpx.RequestError, ValueError):
+        pass  # degradación controlada: el pedido queda `pending`, no se declara pagado
+    cur.execute("UPDATE orders SET status = ? WHERE id = ?", (estado, pedido_id))
 
     resultado = {
         "id": pedido_id,
@@ -188,7 +203,7 @@ async def create_order(
         "subtotal": subtotal,
         "envio": envio,
         "total": total,
-        "status": "confirmed",
+        "status": estado,
     }
 
     # Guardar en registro de idempotencia si se proveyó la clave
@@ -257,7 +272,7 @@ def get_order_by_id(order_id: int, ident: dict = Depends(obtener_identidad)):
 
 
 @app.patch("/orders/{order_id}/status")
-def update_order_status(
+async def update_order_status(
     order_id: int,
     datos: EstadoUpdateIn,
     ident: dict = Depends(obtener_identidad),
@@ -268,9 +283,30 @@ def update_order_status(
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("SELECT id, status FROM orders WHERE id = ?", (order_id,))
-    if not cur.fetchone():
+    pedido = cur.fetchone()
+    if not pedido:
         conn.close()
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
+    if datos.status not in TRANSICIONES.get(pedido["status"], set()):
+        conn.close()
+        raise HTTPException(status_code=409, detail=f"Transición no permitida: {pedido['status']} -> {datos.status}")
+
+    if datos.status == "cancelled":
+        # La anulación conserva el historial (no se borra) y devuelve el stock reservado.
+        cur.execute("SELECT product_id AS id, cantidad FROM order_items WHERE order_id = ?", (order_id,))
+        items = [dict(r) for r in cur.fetchall()]
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                r = await client.post(
+                    f"{INVENTORY_URL}/inventory/release",
+                    json={"items": items},
+                    headers={"X-Internal-Secret": INTERNAL_SERVICE_SECRET},
+                )
+            if r.status_code != 200:
+                raise httpx.RequestError("release")
+        except httpx.RequestError:
+            conn.close()
+            raise HTTPException(status_code=503, detail="No se pudo devolver el stock; la anulación no se aplicó")
 
     cur.execute("UPDATE orders SET status = ? WHERE id = ?", (datos.status, order_id))
     conn.commit()

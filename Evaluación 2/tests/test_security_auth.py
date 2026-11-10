@@ -12,8 +12,9 @@ inv_client = TestClient(inventory_service.app)
 orders_client = TestClient(orders_service.app)
 gw_client = TestClient(gateway.app)
 
-SECRET = "gateway-api-secret-456"
-INTRO_SECRET = "gateway-auth-secret-789"
+import os
+SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
+INTRO_SECRET = os.environ["AUTH_INTROSPECTION_SECRET"]
 
 
 def test_password_hashing_scrypt_no_reversible():

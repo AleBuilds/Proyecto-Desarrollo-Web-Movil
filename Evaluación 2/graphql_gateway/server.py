@@ -10,7 +10,7 @@ from strawberry.fastapi import GraphQLRouter
 
 from schema import schema
 
-INTERNAL_SERVICE_SECRET = os.getenv("INTERNAL_SERVICE_SECRET", "gateway-api-secret-456")
+INTERNAL_SERVICE_SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
 MAX_QUERY_DEPTH = 6
 
 
@@ -39,6 +39,11 @@ app = FastAPI(title="GraphQL Gateway - El Mediterráneo")
 
 @app.middleware("http")
 async def depth_limit_middleware(request: Request, call_next):
+    # Servicio privado: solo el API Gateway (que porta el secreto interno) puede invocarlo.
+    if request.url.path.startswith("/graphql"):
+        recibido = request.headers.get("X-Internal-Secret", "")
+        if not secrets.compare_digest(recibido.encode("utf-8"), INTERNAL_SERVICE_SECRET.encode("utf-8")):
+            return JSONResponse(status_code=403, content={"detail": "Acceso no autorizado al GraphQL Gateway privado"})
     if request.url.path == "/graphql" and request.method == "POST":
         body_bytes = await request.body()
         try:

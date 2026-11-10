@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from db_inventory import get_connection, init_db, reset_test_data
 
-INTERNAL_SERVICE_SECRET = os.getenv("INTERNAL_SERVICE_SECRET", "gateway-api-secret-456")
+INTERNAL_SERVICE_SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
 
 
 @asynccontextmanager

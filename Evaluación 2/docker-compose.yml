@@ -17,12 +17,13 @@ services:
         COPY requirements.txt .
         RUN pip install --no-cache-dir -r requirements.txt
         COPY auth_service/ ./auth_service/
+        WORKDIR /app/auth_service
         EXPOSE 8100
-        CMD ["uvicorn", "auth_service.auth_service:app", "--host", "0.0.0.0", "--port", "8100"]
+        CMD ["uvicorn", "auth_service:app", "--host", "0.0.0.0", "--port", "8100"]
     networks:
       - internal_mesh
     environment:
-      - AUTH_INTROSPECTION_SECRET=gateway-auth-secret-789
+      - AUTH_INTROSPECTION_SECRET=${AUTH_INTROSPECTION_SECRET:?defina AUTH_INTROSPECTION_SECRET en .env}
       - SESSION_TTL=900
 
   # Microservicio Privado: Inventory
@@ -35,12 +36,13 @@ services:
         COPY requirements.txt .
         RUN pip install --no-cache-dir -r requirements.txt
         COPY services/inventory/ ./services/inventory/
+        WORKDIR /app/services/inventory
         EXPOSE 9001
-        CMD ["uvicorn", "services.inventory.inventory_service:app", "--host", "0.0.0.0", "--port", "9001"]
+        CMD ["uvicorn", "inventory_service:app", "--host", "0.0.0.0", "--port", "9001"]
     networks:
       - internal_mesh
     environment:
-      - INTERNAL_SERVICE_SECRET=gateway-api-secret-456
+      - INTERNAL_SERVICE_SECRET=${INTERNAL_SERVICE_SECRET:?defina INTERNAL_SERVICE_SECRET en .env}
 
   # Microservicio Privado: Orders
   orders:
@@ -52,12 +54,14 @@ services:
         COPY requirements.txt .
         RUN pip install --no-cache-dir -r requirements.txt
         COPY services/orders/ ./services/orders/
+        WORKDIR /app/services/orders
         EXPOSE 9002
-        CMD ["uvicorn", "services.orders.orders_service:app", "--host", "0.0.0.0", "--port", "9002"]
+        CMD ["uvicorn", "orders_service:app", "--host", "0.0.0.0", "--port", "9002"]
     networks:
       - internal_mesh
     environment:
-      - INTERNAL_SERVICE_SECRET=gateway-api-secret-456
+      - INTERNAL_SERVICE_SECRET=${INTERNAL_SERVICE_SECRET:?defina INTERNAL_SERVICE_SECRET en .env}
+      - PAYMENTS_SERVICE_SECRET=${PAYMENTS_SERVICE_SECRET:?defina PAYMENTS_SERVICE_SECRET en .env}
       - INVENTORY_URL=http://inventory:9001
       - PAYMENTS_URL=http://payments:9004
 
@@ -71,12 +75,13 @@ services:
         COPY requirements.txt .
         RUN pip install --no-cache-dir -r requirements.txt
         COPY services/clients/ ./services/clients/
+        WORKDIR /app/services/clients
         EXPOSE 9003
-        CMD ["uvicorn", "services.clients.clients_service:app", "--host", "0.0.0.0", "--port", "9003"]
+        CMD ["uvicorn", "clients_service:app", "--host", "0.0.0.0", "--port", "9003"]
     networks:
       - internal_mesh
     environment:
-      - INTERNAL_SERVICE_SECRET=gateway-api-secret-456
+      - INTERNAL_SERVICE_SECRET=${INTERNAL_SERVICE_SECRET:?defina INTERNAL_SERVICE_SECRET en .env}
 
   # Microservicio Privado: Payments
   payments:
@@ -88,12 +93,13 @@ services:
         COPY requirements.txt .
         RUN pip install --no-cache-dir -r requirements.txt
         COPY services/payments/ ./services/payments/
+        WORKDIR /app/services/payments
         EXPOSE 9004
-        CMD ["uvicorn", "services.payments.payments_service:app", "--host", "0.0.0.0", "--port", "9004"]
+        CMD ["uvicorn", "payments_service:app", "--host", "0.0.0.0", "--port", "9004"]
     networks:
       - internal_mesh
     environment:
-      - INTERNAL_SERVICE_SECRET=gateway-api-secret-456
+      - PAYMENTS_SERVICE_SECRET=${PAYMENTS_SERVICE_SECRET:?defina PAYMENTS_SERVICE_SECRET en .env}
 
   # Microservicio Privado: GraphQL Gateway
   graphql_gateway:
@@ -105,12 +111,13 @@ services:
         COPY requirements.txt .
         RUN pip install --no-cache-dir -r requirements.txt
         COPY graphql_gateway/ ./graphql_gateway/
+        WORKDIR /app/graphql_gateway
         EXPOSE 8050
-        CMD ["uvicorn", "graphql_gateway.server:app", "--host", "0.0.0.0", "--port", "8050"]
+        CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8050"]
     networks:
       - internal_mesh
     environment:
-      - INTERNAL_SERVICE_SECRET=gateway-api-secret-456
+      - INTERNAL_SERVICE_SECRET=${INTERNAL_SERVICE_SECRET:?defina INTERNAL_SERVICE_SECRET en .env}
       - INVENTORY_URL=http://inventory:9001
       - ORDERS_URL=http://orders:9002
       - CLIENTS_URL=http://clients:9003
@@ -125,10 +132,14 @@ services:
         COPY requirements.txt .
         RUN pip install --no-cache-dir -r requirements.txt
         COPY services/delivery_telemetry/ ./services/delivery_telemetry/
+        WORKDIR /app/services/delivery_telemetry
         EXPOSE 50051
-        CMD ["python", "services/delivery_telemetry/grpc_server.py"]
+        CMD ["python", "grpc_server.py"]
     networks:
       - internal_mesh
+    environment:
+      - GRPC_SERVICE_SECRET=${GRPC_SERVICE_SECRET:?defina GRPC_SERVICE_SECRET en .env}
+      - GRPC_BIND=0.0.0.0
 
   # Punto Único de Entrada Público: API Gateway
   api_gateway:
@@ -140,8 +151,9 @@ services:
         COPY requirements.txt .
         RUN pip install --no-cache-dir -r requirements.txt
         COPY gateway/ ./gateway/
+        WORKDIR /app/gateway
         EXPOSE 8000
-        CMD ["uvicorn", "gateway.gateway:app", "--host", "0.0.0.0", "--port", "8000"]
+        CMD ["uvicorn", "gateway:app", "--host", "0.0.0.0", "--port", "8000"]
     ports:
       - "8000:8000"
     networks:
@@ -154,5 +166,5 @@ services:
       - CLIENTS_URL=http://clients:9003
       - PAYMENTS_URL=http://payments:9004
       - GRAPHQL_URL=http://graphql_gateway:8050
-      - INTERNAL_SERVICE_SECRET=gateway-api-secret-456
-      - AUTH_INTROSPECTION_SECRET=gateway-auth-secret-789
+      - INTERNAL_SERVICE_SECRET=${INTERNAL_SERVICE_SECRET:?defina INTERNAL_SERVICE_SECRET en .env}
+      - AUTH_INTROSPECTION_SECRET=${AUTH_INTROSPECTION_SECRET:?defina AUTH_INTROSPECTION_SECRET en .env}

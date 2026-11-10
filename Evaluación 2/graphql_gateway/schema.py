@@ -3,13 +3,14 @@ Agrega información de múltiples subsistemas: Orders (:9002), Inventory (:9001)
 Implementa límites de complejidad/profundidad y manejo controlado de errores parciales.
 """
 from typing import Optional
+import os
 import httpx
 import strawberry
 
-INTERNAL_SECRET = "gateway-api-secret-456"
-INVENTORY_URL = "http://127.0.0.1:9001"
-ORDERS_URL = "http://127.0.0.1:9002"
-CLIENTS_URL = "http://127.0.0.1:9003"
+INTERNAL_SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
+INVENTORY_URL = os.getenv("INVENTORY_URL", "http://127.0.0.1:9001")
+ORDERS_URL = os.getenv("ORDERS_URL", "http://127.0.0.1:9002")
+CLIENTS_URL = os.getenv("CLIENTS_URL", "http://127.0.0.1:9003")
 
 
 @strawberry.type
@@ -100,15 +101,18 @@ class Query:
     async def resumen_pedido(self, info: strawberry.types.Info, order_id: int) -> Optional[ResumenPedidoAgregado]:
         """Agregación E2E: combina Orders (:9002) + Inventory (:9001) + Clients (:9003)."""
         request = info.context.get("request")
-        user_id = request.headers.get("X-Authenticated-User") if request else "USR-001"
-        username = request.headers.get("X-Authenticated-Username") if request else "ana"
-        roles = request.headers.get("X-Authenticated-Roles") if request else "user"
+        user_id = request.headers.get("X-Authenticated-User") if request else None
+        username = request.headers.get("X-Authenticated-Username") if request else None
+        roles = request.headers.get("X-Authenticated-Roles") if request else None
+        if not user_id or not username or not roles:
+            # Sin identidad verificada por el gateway no hay valores por defecto: se rechaza.
+            raise PermissionError("Autenticación requerida para consultar un pedido")
 
         headers_auth = {
             "X-Internal-Secret": INTERNAL_SECRET,
-            "X-Authenticated-User": user_id or "USR-001",
-            "X-Authenticated-Username": username or "ana",
-            "X-Authenticated-Roles": roles or "user",
+            "X-Authenticated-User": user_id,
+            "X-Authenticated-Username": username,
+            "X-Authenticated-Roles": roles,
         }
 
         # 1. Obtener Pedido desde Orders

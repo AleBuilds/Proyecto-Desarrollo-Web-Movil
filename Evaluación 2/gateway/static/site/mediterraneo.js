@@ -25,7 +25,8 @@
             .map((i) => { const p = carta.find((x) => x.id === i.id); return { id: p.id, nombre: p.nombre, precio: p.precio, img: p.img, cantidad: i.cantidad }; }));
     };
 
-    async function api(url, opts = {}) {
+    let claveIdem = null; // clave de idempotencia por intento de pedido
+async function api(url, opts = {}) {
         try {
             const r = await fetch(url, { credentials: 'include', headers: { 'Content-Type': 'application/json' }, ...opts });
             let data = null; try { data = await r.json(); } catch (e) { /* sin cuerpo */ }
@@ -87,9 +88,11 @@
                 ev.preventDefault();
                 const v = Object.fromEntries(new FormData(f)), items = leer().map(({ id, cantidad }) => ({ id, cantidad }));
                 if (!items.length) return alert('Tu carrito está vacío');
-                const r = await api('/api/orders', { method: 'POST', body: JSON.stringify({ metodo, nombre: v.nombre, telefono: v.telefono, direccion: v.direccion || '', notas: v.notas || '', items }) });
+                claveIdem = claveIdem || crypto.randomUUID();
+                const r = await api('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': claveIdem }, body: JSON.stringify({ metodo, nombre: v.nombre, telefono: v.telefono, direccion: v.direccion || '', notas: v.notas || '', items }) });
                 if (r.status === 401) return aLogin('Inicia sesión para confirmar tu pedido (tu carrito se conserva).');
                 if (!r.ok) return alert(detalle(r));
+                claveIdem = null;
                 try { sessionStorage.setItem('ultimo_pedido', JSON.stringify({ id: r.data.id, total: r.data.total, items: r.data.items, metodo })); } catch (e) { /* sin storage */ }
                 guardar([]); location.href = '/confirmacion.html';
             });
@@ -117,8 +120,13 @@
                     method: 'POST',
                     body: JSON.stringify({ query: gqlQuery, variables: { orderId: p.id } })
                 });
-                if (gqlResp.ok && gqlResp.data?.data?.resumenPedido) {
-                    console.log('[GraphQL Gateway] Resumen de pedido agregado con éxito:', gqlResp.data.data.resumenPedido);
+                const caja = $('#resumen-gql'), cuerpo = $('#resumen-gql-cuerpo');
+                const rp = gqlResp.ok && gqlResp.data?.data?.resumenPedido;
+                if (rp && caja && cuerpo) {
+                    cuerpo.innerHTML = `<p class="mb-1"><strong>Titular:</strong> ${esc(rp.cliente?.nombreCompleto ?? '—')} · ${esc(rp.cliente?.email ?? '—')}</p>`
+                        + `<p class="mb-2"><strong>Estado:</strong> ${esc(rp.status === 'confirmed' ? 'Confirmado (pago aprobado)' : 'Pago pendiente')} · <strong>Total:</strong> ${clp(rp.total)}</p>`
+                        + `<ul class="list-unstyled mb-0">${rp.items.map((i) => `<li class="d-flex justify-content-between border-top py-1"><span>${i.cantidad}× ${esc(i.nombre)} <small class="text-secondary">(${esc(i.categoria ?? '')})</small></span><span>${clp(i.subtotalLinea)}</span></li>`).join('')}</ul>`;
+                    caja.hidden = false;
                 }
             })();
         },
@@ -136,9 +144,16 @@
             });
         },
 
-        contacto() {  // el backend aún no tiene endpoint de contacto
+        contacto() {
             const f = $('form');
-            f.addEventListener('submit', (ev) => { ev.preventDefault(); alert('Formulario de demostración: el backend todavía no guarda mensajes de contacto.'); f.reset(); });
+            f.addEventListener('submit', async (ev) => {
+                ev.preventDefault();
+                const v = Object.fromEntries(new FormData(f));
+                const r = await api('/public/contact', { method: 'POST', body: JSON.stringify({ nombre: v.nombre, email: v.email, mensaje: v.mensaje }) });
+                if (r.status === 429) return alert('Has enviado demasiados mensajes, intenta más tarde.');
+                if (!r.ok) return alert('No pudimos enviar tu mensaje, revisa los datos e inténtalo de nuevo.');
+                alert('¡Gracias! Recibimos tu mensaje y te responderemos pronto.'); f.reset();
+            });
         },
 
         producto() {

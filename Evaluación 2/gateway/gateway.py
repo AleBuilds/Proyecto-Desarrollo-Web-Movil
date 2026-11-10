@@ -4,8 +4,12 @@ Valida sesión en cookies HttpOnly, verifica permisos RBAC, enruta peticiones
 a microservicios privados (Inventory, Orders, Clients, Payments, GraphQL) e
 inyecta el secreto interno de servicio X-Internal-Secret.
 """
+import logging
 import os
 import re
+import time
+import uuid
+from collections import defaultdict, deque
 from pathlib import Path
 
 import httpx
@@ -21,12 +25,27 @@ CLIENTS_URL = os.getenv("CLIENTS_URL", "http://127.0.0.1:9003")
 PAYMENTS_URL = os.getenv("PAYMENTS_URL", "http://127.0.0.1:9004")
 GRAPHQL_URL = os.getenv("GRAPHQL_URL", "http://127.0.0.1:8050")
 
-INTERNAL_SERVICE_SECRET = os.getenv("INTERNAL_SERVICE_SECRET", "gateway-api-secret-456")
-AUTH_INTROSPECTION_SECRET = os.getenv("AUTH_INTROSPECTION_SECRET", "gateway-auth-secret-789")
+INTERNAL_SERVICE_SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
+AUTH_INTROSPECTION_SECRET = os.environ["AUTH_INTROSPECTION_SECRET"]
 
 COOKIE_NAME = "session_token"
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
 TIMEOUT_DOWNSTREAM = 8.0
+
+# Límites de solicitudes por IP y por minuto (ventana deslizante en memoria).
+RATE_LIMIT_GENERAL_POR_MIN = int(os.getenv("RATE_LIMIT_GENERAL_POR_MIN", "120"))
+RATE_LIMIT_LOGIN_POR_MIN = int(os.getenv("RATE_LIMIT_LOGIN_POR_MIN", "5"))
+_VENTANA_SEG = 60.0
+_solicitudes: dict[tuple[str, str], deque] = defaultdict(deque)
+
+# Registros con identificador de correlación; nunca se registran cuerpo, query string ni cookies.
+logger = logging.getLogger("gateway")
+if not logger.handlers:
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+    logger.addHandler(_h)
+logger.setLevel(logging.INFO)
+_RID_VALIDO = re.compile(r"[A-Za-z0-9-]{8,64}")
 
 CSP = (
     "default-src 'self'; "
@@ -41,6 +60,45 @@ SITE_DIR = STATIC_DIR / "site"
 
 app = FastAPI(title="API Gateway - El Mediterráneo")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+def _excede_limite(ip: str, cubo: str, maximo: int) -> int:
+    """Devuelve 0 si la solicitud cabe en el límite; si no, los segundos a esperar."""
+    ahora = time.monotonic()
+    ventana = _solicitudes[(ip, cubo)]
+    while ventana and ahora - ventana[0] > _VENTANA_SEG:
+        ventana.popleft()
+    if len(ventana) >= maximo:
+        return max(1, int(_VENTANA_SEG - (ahora - ventana[0])) + 1)
+    ventana.append(ahora)
+    return 0
+
+
+@app.middleware("http")
+async def correlacion_y_limites(request: Request, call_next):
+    rid = request.headers.get("X-Request-ID", "")
+    request.state.request_id = rid if _RID_VALIDO.fullmatch(rid) else uuid.uuid4().hex
+    inicio = time.monotonic()
+    ip = request.client.host if request.client else "desconocida"
+    ruta = request.url.path
+
+    espera = 0
+    if not ruta.startswith("/static") and ruta != "/health":
+        if ruta in ("/auth/login", "/auth/register", "/public/contact") and request.method == "POST":
+            # Contadores separados: equivocarse al registrarse no bloquea el inicio de sesión
+            espera = _excede_limite(ip, ruta, RATE_LIMIT_LOGIN_POR_MIN)
+        if not espera:
+            espera = _excede_limite(ip, "general", RATE_LIMIT_GENERAL_POR_MIN)
+
+    if espera:
+        response = JSONResponse({"detail": "Demasiadas solicitudes, intente más tarde"}, status_code=429,
+                                headers={"Retry-After": str(espera)})
+    else:
+        response = await call_next(request)
+    response.headers["X-Request-ID"] = request.state.request_id
+    logger.info("rid=%s ip=%s %s %s -> %s %.0fms", request.state.request_id, ip, request.method, ruta,
+                response.status_code, (time.monotonic() - inicio) * 1000)
+    return response
 
 # Matriz de permisos RBAC: (Método, Primer segmento de ruta)
 PERMISOS_POR_ROL: dict[str, set[tuple[str, str]]] = {
@@ -64,6 +122,7 @@ PERMISOS_POR_ROL: dict[str, set[tuple[str, str]]] = {
         ("POST", "reservations"),
         ("GET", "clients"),
         ("PUT", "clients"),
+        ("GET", "contact"),
     },
 }
 
@@ -124,8 +183,8 @@ def resolver_destino_microservicio(path: str) -> tuple[str, str]:
         return INVENTORY_URL, f"products/{resto}" if resto else "products"
     elif recurso in ("orders", "reservations"):
         return ORDERS_URL, path.strip("/")
-    elif recurso == "clients":
-        return CLIENTS_URL, f"clients/{resto}" if resto else "clients"
+    elif recurso in ("clients", "contact"):
+        return CLIENTS_URL, path.strip("/")
     elif recurso == "payments":
         return PAYMENTS_URL, f"payments/{resto}" if resto else "payments"
     else:
@@ -135,6 +194,14 @@ def resolver_destino_microservicio(path: str) -> tuple[str, str]:
 class LoginIn(BaseModel):
     username: str = Field(min_length=1, max_length=64)
     password: str = Field(min_length=1, max_length=128)
+
+
+class RegistroIn(BaseModel):
+    username: str = Field(min_length=3, max_length=32, pattern=r"^[a-z0-9_.-]+$")
+    password: str = Field(min_length=8, max_length=128)
+    nombre_completo: str = Field(min_length=2, max_length=100)
+    email: str = Field(min_length=5, max_length=120, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    telefono: str = Field(default="", max_length=25)
 
 
 @app.get("/health")
@@ -204,6 +271,69 @@ async def login(datos: LoginIn, response: Response):
     }
 
 
+@app.post("/auth/register", status_code=201)
+async def register(datos: RegistroIn, request: Request):
+    """Registro público: identidad en auth_service + perfil en clients. El rol lo decide el servidor (`user`)."""
+    rid = {"X-Request-ID": request.state.request_id}
+    try:
+        async with httpx.AsyncClient(timeout=TIMEOUT_DOWNSTREAM) as client:
+            r = await client.post(
+                f"{AUTH_URL}/register",
+                json={"username": datos.username, "password": datos.password},
+                headers={"X-Introspection-Secret": AUTH_INTROSPECTION_SECRET, **rid},
+            )
+            if r.status_code == 409:
+                raise HTTPException(status_code=409, detail="El nombre de usuario ya existe")
+            if r.status_code == 422:
+                raise HTTPException(status_code=422, detail="Contraseña no válida")
+            if r.status_code != 201:
+                raise HTTPException(status_code=503, detail="No se pudo completar el registro")
+            identidad = r.json()
+            rp = await client.post(
+                f"{CLIENTS_URL}/clients",
+                json=datos.model_dump(include={"nombre_completo", "email", "telefono"}),
+                headers={
+                    "X-Internal-Secret": INTERNAL_SERVICE_SECRET,
+                    "X-Authenticated-User": identidad["user_id"],
+                    "X-Authenticated-Username": identidad["username"],
+                    **rid,
+                },
+            )
+            if rp.status_code != 201:
+                # Compensación: no dejar una identidad sin perfil
+                await client.delete(
+                    f"{AUTH_URL}/identities/{identidad['user_id']}",
+                    headers={"X-Introspection-Secret": AUTH_INTROSPECTION_SECRET, **rid},
+                )
+                raise HTTPException(status_code=503, detail="No se pudo completar el registro")
+    except httpx.RequestError:
+        raise HTTPException(status_code=503, detail="Servicio no disponible, intente más tarde")
+    return {"status": "registrado", "username": identidad["username"]}
+
+
+class ContactoIn(BaseModel):
+    nombre: str = Field(min_length=2, max_length=100)
+    email: str = Field(min_length=5, max_length=120, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    mensaje: str = Field(min_length=5, max_length=1000)
+
+
+@app.post("/public/contact", status_code=201)
+async def contacto(datos: ContactoIn, request: Request):
+    """Ruta pública (REQ-08): valida y limita por IP; clients es el custodio del dato."""
+    try:
+        async with httpx.AsyncClient(timeout=TIMEOUT_DOWNSTREAM) as client:
+            r = await client.post(
+                f"{CLIENTS_URL}/contact",
+                json=datos.model_dump(),
+                headers={"X-Internal-Secret": INTERNAL_SERVICE_SECRET, "X-Request-ID": request.state.request_id},
+            )
+    except httpx.RequestError:
+        raise HTTPException(status_code=503, detail="Servicio no disponible, intente más tarde")
+    if r.status_code != 201:
+        raise HTTPException(status_code=503, detail="No se pudo registrar el mensaje")
+    return {"status": "recibido"}
+
+
 @app.get("/auth/me")
 async def auth_me(request: Request):
     identidad = await get_current_identity(request)
@@ -250,7 +380,7 @@ async def public_menu():
 @app.api_route("/graphql", methods=["GET", "POST"])
 async def proxy_graphql(request: Request):
     """Enrutamiento hacia el GraphQL Gateway propagando la identidad verificada si existe."""
-    headers = {"X-Internal-Secret": INTERNAL_SERVICE_SECRET}
+    headers = {"X-Internal-Secret": INTERNAL_SERVICE_SECRET, "X-Request-ID": request.state.request_id}
     token = request.cookies.get(COOKIE_NAME)
     if token:
         try:
@@ -293,6 +423,7 @@ async def proxy_api(path: str, request: Request):
         "X-Authenticated-User": identidad["user_id"],
         "X-Authenticated-Username": identidad["username"],
         "X-Authenticated-Roles": ",".join(identidad["roles"]),
+        "X-Request-ID": request.state.request_id,
     }
     # Si viene idempotency key en la solicitud, se propaga
     idempotency_key = request.headers.get("X-Idempotency-Key")

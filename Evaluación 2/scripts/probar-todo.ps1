@@ -8,7 +8,8 @@ Write-Host "  Caso 22: El Mediterráneo                                " -Foregr
 Write-Host "  Alejandro Narváez & Silenay Sarmiento                   " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-python -m pytest tests -v --tb=short
+. (Join-Path $PSScriptRoot "cargar-env.ps1")
+& $global:PY -m pytest tests -v --tb=short
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""

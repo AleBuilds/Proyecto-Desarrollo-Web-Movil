@@ -6,6 +6,7 @@ import hmac
 import os
 import secrets
 import time
+import sqlite3
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Header, HTTPException
@@ -13,7 +14,7 @@ from pydantic import BaseModel, Field
 
 from db_auth import get_connection, init_db, hash_password
 
-AUTH_INTROSPECTION_SECRET = os.getenv("AUTH_INTROSPECTION_SECRET", "gateway-auth-secret-789")
+AUTH_INTROSPECTION_SECRET = os.environ["AUTH_INTROSPECTION_SECRET"]
 SESSION_TTL = int(os.getenv("SESSION_TTL", "900"))  # 15 minutos
 
 
@@ -60,6 +61,12 @@ def verificar_secreto_introspeccion(
 class LoginIn(BaseModel):
     username: str = Field(min_length=1, max_length=64)
     password: str = Field(min_length=1, max_length=128)
+
+
+class RegistroIn(BaseModel):
+    """El rol NO es un campo: toda cuenta nueva nace con rol `user` (campos extra se ignoran)."""
+    username: str = Field(min_length=3, max_length=32, pattern=r"^[a-z0-9_.-]+$")
+    password: str = Field(min_length=8, max_length=128)
 
 
 class TokenIn(BaseModel):
@@ -147,3 +154,34 @@ def logout(datos: TokenIn, _: None = Depends(verificar_secreto_introspeccion)):
     conn.commit()
     conn.close()
     return {"status": "logged_out"}
+
+
+@app.post("/register", status_code=201)
+def register(datos: RegistroIn, _: None = Depends(verificar_secreto_introspeccion)):
+    """Crea una identidad con hash scrypt y sal única. Siempre rol `user`."""
+    if datos.password.lower() == datos.username:
+        raise HTTPException(status_code=422, detail="La contraseña no puede ser igual al usuario")
+    user_id = "USR-" + secrets.token_hex(4).upper()
+    conn = get_connection()
+    try:
+        conn.execute(
+            "INSERT INTO identities (user_id, username, password_hash, roles) VALUES (?, ?, ?, 'user')",
+            (user_id, datos.username, hash_password(datos.password)),
+        )
+        conn.commit()
+    except sqlite3.IntegrityError:
+        raise HTTPException(status_code=409, detail="El nombre de usuario ya existe")
+    finally:
+        conn.close()
+    return {"user_id": user_id, "username": datos.username, "roles": ["user"]}
+
+
+@app.delete("/identities/{user_id}")
+def delete_identity(user_id: str, _: None = Depends(verificar_secreto_introspeccion)):
+    """Compensación del registro: si no se pudo crear el perfil, se revierte la identidad."""
+    conn = get_connection()
+    conn.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
+    conn.execute("DELETE FROM identities WHERE user_id = ? AND roles = 'user'", (user_id,))
+    conn.commit()
+    conn.close()
+    return {"status": "deleted"}

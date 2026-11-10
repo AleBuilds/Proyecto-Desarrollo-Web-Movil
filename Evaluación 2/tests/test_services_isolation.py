@@ -12,7 +12,8 @@ orders_client = TestClient(orders_service.app)
 pay_client = TestClient(payments_service.app)
 cli_client = TestClient(clients_service.app)
 
-SECRET = "gateway-api-secret-456"
+import os
+SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
 HEADERS_AUTH = {
     "X-Internal-Secret": SECRET,
     "X-Authenticated-User": "USR-001",
@@ -96,7 +97,7 @@ def test_pagos_previene_doble_transaccion():
     import random
     unique_order_id = random.randint(100000, 999999)
     pago = {"order_id": unique_order_id, "user_id": "USR-001", "monto": 15000, "metodo_pago": "webpay"}
-    headers = {"X-Internal-Secret": SECRET}
+    headers = {"X-Internal-Secret": os.environ["PAYMENTS_SERVICE_SECRET"]}
 
     # Primer pago
     r1 = pay_client.post("/payments/process", json=pago, headers=headers)

@@ -19,6 +19,7 @@ const carrito = {
     total() { return this.get().reduce((s, x) => s + x.cantidad, 0); },
 };
 
+let claveIdem = null;
 async function api(url, opts = {}) {
     try {
         const r = await fetch(url, { credentials: "include", headers: { "Content-Type": "application/json" }, ...opts });
@@ -94,7 +95,15 @@ const VISTAS = {
 
     login: () => `<h2>Ingresar</h2><div class="panel"><form id="f-login"><label>Usuario<input name="username" autocomplete="username" required></label>
         <label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Entrar</button></form>
-        <p><small>Demo: <code>ana / 1234</code> (cliente) · <code>administrador1 / admin123</code> (admin)</small></p></div>`,
+        <p><a href="#/registro">¿No tienes cuenta? Regístrate</a></p></div>`,
+
+    registro: () => `<h2>Crear cuenta</h2><div class="panel"><form id="f-registro">
+        <label>Nombre completo<input name="nombre_completo" autocomplete="name" required minlength="2" maxlength="100"></label>
+        <label>Correo<input name="email" type="email" autocomplete="email" required></label>
+        <label>Teléfono<input name="telefono" type="tel" autocomplete="tel" maxlength="25"></label>
+        <label>Usuario (minúsculas, números, . _ -)<input name="username" autocomplete="username" required pattern="[a-z0-9_.\\-]{3,32}"></label>
+        <label>Contraseña (mínimo 8 caracteres)<input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="128"></label>
+        <button type="submit">Registrarme</button></form></div>`,
 };
 
 function nav() {
@@ -133,11 +142,17 @@ document.addEventListener("submit", async (ev) => {
         const r = await api("/auth/login", { method: "POST", body: JSON.stringify(v) });
         if (!r.ok) return aviso(detalle(r), true);
         await cargarSesion(); aviso(`Bienvenido/a, ${user.username}`); ir("#/");
+    } else if (f.id === "f-registro") {
+        const r = await api("/auth/register", { method: "POST", body: JSON.stringify(v) });
+        if (!r.ok) return aviso(detalle(r), true);
+        mantenerAviso = true; aviso("Cuenta creada. Ahora puedes ingresar."); ir("#/login");
     } else if (f.id === "f-pedido") {
         const items = carrito.get().map(({ id, cantidad }) => ({ id, cantidad }));
-        const r = await api("/api/orders", { method: "POST", body: JSON.stringify({ ...v, items }) });
+        // Misma clave en reintentos/doble clic: el servidor no duplica el pedido (idempotencia).
+        claveIdem = claveIdem || crypto.randomUUID();
+        const r = await api("/api/orders", { method: "POST", headers: { "Content-Type": "application/json", "X-Idempotency-Key": claveIdem }, body: JSON.stringify({ ...v, items }) });
         if (!r.ok) return aviso(r.status === 401 ? "Tu sesión expiró, vuelve a ingresar" : detalle(r), true);
-        carrito.set([]); aviso(`Pedido #${r.data.id} confirmado. Total ${clp(r.data.total)}`); ir("#/pedidos");
+        claveIdem = null; carrito.set([]); aviso(`Pedido #${r.data.id} ${r.data.status === "confirmed" ? "confirmado" : "recibido (pago pendiente)"}. Total ${clp(r.data.total)}`); ir("#/pedidos");
     } else if (f.id === "f-reserva") {
         const r = await api("/api/reservations", { method: "POST", body: JSON.stringify({ ...v, personas: +v.personas }) });
         if (!r.ok) return aviso(detalle(r), true);
