@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Contacto — El Mediterráneo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/site/style.css">
+    <link rel="stylesheet" href="/static/site/site.css">
+</head>
+<body data-page="contacto" class="bg-crema d-flex flex-column min-vh-100">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-carbon navbar-dark sticky-top shadow-sm py-3">
+    <div class="container">
+        <a class="st0 navbar-brand font-cinzel fw-bold fs-4 text-uppercase tracking-wide" href="/">
+            <i class="fa fa-cutlery me-2 text-fuego"></i>EL MEDITERRÁNEO
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-label="Abrir navegación">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+            <ul class="navbar-nav gap-lg-3">
+                <li class="nav-item"><a class="nav-link text-uppercase fw-semibold px-3 text-light" href="/">Inicio</a></li><li class="nav-item"><a class="nav-link text-uppercase fw-semibold px-3 text-light" href="/menu.html">Menú</a></li><li class="nav-item"><a class="nav-link text-uppercase fw-semibold px-3 text-light" href="/nosotros.html">Nosotros</a></li><li class="nav-item"><a class="nav-link text-uppercase fw-semibold px-3 text-light" href="/reservas.html">Reservas</a></li><li class="nav-item"><a class="nav-link text-uppercase fw-semibold px-3 active text-sol border-bottom border-2 border-warning" href="/contacto.html">Contacto</a></li>
+            </ul>
+        </div>
+        <!-- Botón interactivo al carrito -->
+        <div class="d-flex align-items-center">
+            <span id="cuenta" class="me-3 small text-nowrap"></span>
+            <a href="/carrito.html" class="btn btn-fuego rounded-pill px-4 py-2 d-flex align-items-center gap-2 shadow-sm text-decoration-none">
+                <i class="fa fa-shopping-cart"></i>
+                <span class="d-none d-sm-inline">Carrito</span>
+                <span class="badge badge-fuego carrito-badge rounded-circle bg-white text-fuego px-2 py-1 fs-7">0</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+
+
+    <!-- Contenido Principal -->
+    <main class="container py-5 flex-grow-1">
+        <div class="row g-5">
+            <!-- Ubicación y Formulario -->
+            <div class="col-12 col-lg-8">
+                <!-- Bloque Mapa con imagen realista -->
+                <h2 class="font-cinzel text-carbon fw-bold text-uppercase mb-3 fs-3">Ubicación</h2>
+                <div class="st8 rounded-3 overflow-hidden shadow-sm mb-5 position-relative">
+                    <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1000&q=80" class="img-cover w-100 h-100" alt="Mapa Ubicación">
+                    <div class="position-absolute top-50 start-50 translate-middle bg-carbon text-sol px-4 py-2 rounded-3 shadow border border-warning fw-bold text-uppercase font-cinzel">
+                        <i class="fa fa-map-marker text-fuego me-2"></i> El Mediterráneo - Maipú
+                    </div>
+                </div>
+
+                <!-- Formulario -->
+                <div class="card border-0 shadow-sm p-4 p-md-5 rounded-3 bg-white">
+                    <h4 class="font-cinzel text-tierra fw-bold text-uppercase mb-4 pb-2 border-bottom">Deja tu mensaje</h4>
+                    
+                    <form action="/contacto.html" method="post">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label text-uppercase fw-bold small text-tierra">Nombre Completo</label>
+                            <input type="text" class="form-control form-control-med" id="nombre" name="nombre" placeholder="Ej. Alejandro Pérez" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label text-uppercase fw-bold small text-tierra">Email de Contacto</label>
+                            <input type="email" class="form-control form-control-med" id="email" name="email" placeholder="Ej. alejandro@email.com" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="mensaje" class="form-label text-uppercase fw-bold small text-tierra">Mensaje</label>
+                            <textarea class="form-control form-control-med" id="mensaje" name="mensaje" rows="4" placeholder="Escribe tu consulta o sugerencia..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-fuego text-uppercase fw-bold px-5 py-3 shadow rounded-3">
+                            Enviar Mensaje <i class="fa fa-paper-plane ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Datos de Contacto -->
+            <div class="col-12 col-lg-4">
+                <h2 class="font-cinzel text-carbon fw-bold text-uppercase mb-4 fs-3">Información</h2>
+                
+                <div class="d-flex flex-column gap-3">
+                    
+                        <div class="card border-0 shadow-sm p-3 rounded-3 bg-white d-flex flex-row align-items-center gap-3">
+                            <div class="st9 bg-carbon text-sol rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                                <i class="fa fa-map-marker fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="font-cinzel fw-bold text-carbon text-uppercase mb-1 fs-6">Dirección</h6>
+                                <p class="text-secondary small mb-0">Av. Pajaritos 2100, Maipú, Santiago</p>
+                            </div>
+                        </div>
+                    
+                        <div class="card border-0 shadow-sm p-3 rounded-3 bg-white d-flex flex-row align-items-center gap-3">
+                            <div class="st9 bg-carbon text-sol rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                                <i class="fa fa-phone fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="font-cinzel fw-bold text-carbon text-uppercase mb-1 fs-6">Teléfono</h6>
+                                <p class="text-secondary small mb-0">+56 9 8765 4321</p>
+                            </div>
+                        </div>
+                    
+                        <div class="card border-0 shadow-sm p-3 rounded-3 bg-white d-flex flex-row align-items-center gap-3">
+                            <div class="st9 bg-carbon text-sol rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                                <i class="fa fa-envelope fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="font-cinzel fw-bold text-carbon text-uppercase mb-1 fs-6">Email</h6>
+                                <p class="text-secondary small mb-0">contacto@elmediterraneo.cl</p>
+                            </div>
+                        </div>
+                    
+                        <div class="card border-0 shadow-sm p-3 rounded-3 bg-white d-flex flex-row align-items-center gap-3">
+                            <div class="st9 bg-carbon text-sol rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                                <i class="fa fa-clock-o fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="font-cinzel fw-bold text-carbon text-uppercase mb-1 fs-6">Horarios</h6>
+                                <p class="text-secondary small mb-0">Lun a Dom: 12:30 - 23:30</p>
+                            </div>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-carbon text-light pt-5 pb-4 mt-auto border-top border-warning border-3">
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-lg-4 col-md-6">
+                <h5 class="font-cinzel text-sol fw-bold text-uppercase mb-3">El Mediterráneo</h5>
+                <p class="text-secondary small mb-3">
+                    Disfruta de la auténtica experiencia gastronómica mediterránea con recetas tradicionales, ingredientes frescos y el sabor único de nuestra parrilla.
+                </p>
+                <div class="d-flex gap-3 text-sol fs-5">
+                    <a href="#" class="text-sol text-decoration-none"><i class="fa fa-instagram"></i></a>
+                    <a href="#" class="text-sol text-decoration-none"><i class="fa fa-facebook"></i></a>
+                    <a href="#" class="text-sol text-decoration-none"><i class="fa fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <h5 class="font-cinzel text-sol fw-bold text-uppercase mb-3">Horarios de Atención</h5>
+                <ul class="list-unstyled text-secondary small">
+                    <li class="mb-2"><strong class="text-light">Lunes a Viernes:</strong> 12:30 – 23:30 hrs</li>
+                    <li class="mb-2"><strong class="text-light">Sábados y Domingos:</strong> 12:00 – 00:00 hrs</li>
+                    <li><strong class="text-light">Delivery & Retiro:</strong> Hasta las 23:00 hrs</li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <h5 class="font-cinzel text-sol fw-bold text-uppercase mb-3">Contacto & Ubicación</h5>
+                <ul class="list-unstyled text-secondary small">
+                    <li class="mb-2"><i class="fa fa-map-marker text-fuego me-2"></i>Av. Pajaritos 2100, Maipú, Región Metropolitana</li>
+                    <li class="mb-2"><i class="fa fa-phone text-fuego me-2"></i>+56 9 8765 4321</li>
+                    <li><i class="fa fa-envelope text-fuego me-2"></i>contacto@elmediterraneo.cl</li>
+                </ul>
+            </div>
+        </div>
+        <div class="row border-top border-secondary pt-3">
+            <div class="col-12 text-center text-secondary small">
+                © 2026 El Mediterráneo. Todos los derechos reservados.
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/static/site/mediterraneo.js"></script>
+</body>
+</html>

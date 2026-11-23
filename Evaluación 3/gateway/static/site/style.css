@@ -1,0 +1,136 @@
+/* ============================================
+   EL MEDITERRÁNEO — System & Brand Styles
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap');
+
+:root {
+  --carbon: #1A1A1A;
+  --tierra: #3B2A20;
+  --fuego:  #A63B1E;
+  --llama:  #E07A1F;
+  --sol:    #F2C94C;
+  --arena:  #DCC7A1;
+  --oliva:  #5E6B3D;
+  --crema:  #F3EFE6;
+  --blanco: #FFFFFF;
+  --gris-texto: #666666;
+  --borde:  #E2DCCA;
+  
+  --fuente-titulo: 'Cinzel', serif;
+  --fuente-cuerpo: 'Montserrat', sans-serif;
+  --fuente-decorativa: 'Playfair Display', serif;
+}
+
+body {
+  font-family: var(--fuente-cuerpo);
+  background-color: var(--crema);
+  color: var(--carbon);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6, .font-cinzel {
+  font-family: var(--fuente-titulo);
+  letter-spacing: 0.03em;
+}
+
+.text-fuego { color: var(--fuego) !important; }
+.text-llama { color: var(--llama) !important; }
+.text-oliva { color: var(--oliva) !important; }
+.text-tierra { color: var(--tierra) !important; }
+.text-arena { color: var(--arena) !important; }
+
+.bg-carbon { background-color: var(--carbon) !important; }
+.bg-tierra { background-color: var(--tierra) !important; }
+.bg-crema { background-color: var(--crema) !important; }
+.bg-fuego { background-color: var(--fuego) !important; }
+.bg-oliva { background-color: var(--oliva) !important; }
+
+/* Buttons */
+.btn-fuego {
+  background-color: var(--fuego);
+  color: var(--blanco);
+  border: 2px solid var(--fuego);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.25s ease;
+}
+.btn-fuego:hover {
+  background-color: var(--llama);
+  border-color: var(--llama);
+  color: var(--blanco);
+}
+
+.btn-outline-carbon {
+  background-color: transparent;
+  color: var(--carbon);
+  border: 2px solid var(--carbon);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.25s ease;
+}
+.btn-outline-carbon:hover {
+  background-color: var(--carbon);
+  color: var(--blanco);
+}
+
+/* Cards & Images */
+.card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(26, 26, 26, 0.12) !important;
+}
+
+.img-cover {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Navbar badge */
+.badge-fuego {
+  background-color: var(--fuego);
+  color: var(--blanco);
+}
+
+/* Form fields */
+.form-control-med {
+  background-color: var(--blanco);
+  border: 1px solid var(--arena);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-family: var(--fuente-cuerpo);
+}
+.form-control-med:focus {
+  border-color: var(--fuego);
+  box-shadow: 0 0 0 3px rgba(166, 59, 30, 0.15);
+  outline: none;
+}
+
+/* Filter pills */
+.filtro-pill {
+  padding: 8px 22px;
+  border-radius: 30px;
+  border: 1px solid var(--arena);
+  color: var(--tierra);
+  background-color: var(--blanco);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  margin-right: 8px;
+  margin-bottom: 10px;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+}
+.filtro-pill.activo {
+  background-color: var(--fuego);
+  color: var(--blanco);
+  border-color: var(--fuego);
+  font-weight: 700;
+}
+.filtro-pill:hover:not(.activo) {
+  background-color: var(--arena);
+  color: var(--carbon);
+}
