@@ -2,17 +2,25 @@
 Persistencia en dbInventory.sqlite.
 Solo accesible por componentes autorizados con INTERNAL_SERVICE_SECRET.
 """
+import logging
 import os
 import secrets
 from contextlib import asynccontextmanager
 from typing import Literal
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from db_inventory import get_connection, init_db, reset_test_data
 
 INTERNAL_SERVICE_SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
+
+logger = logging.getLogger("inventory")
+if not logger.handlers:
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter("%(asctime)s %(levelname)s [inventory] %(message)s"))
+    logger.addHandler(_h)
+logger.setLevel(logging.INFO)
 
 
 @asynccontextmanager
@@ -24,11 +32,17 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Inventory Microservice - El Mediterráneo", lifespan=lifespan)
 
 
-def verify_internal_secret(x_internal_secret: str | None = Header(default=None)):
+def verify_internal_secret(
+    request: Request,
+    x_internal_secret: str | None = Header(default=None),
+    x_request_id: str | None = Header(default=None),
+):
     if x_internal_secret is None or not secrets.compare_digest(
         x_internal_secret.encode("utf-8"), INTERNAL_SERVICE_SECRET.encode("utf-8")
     ):
+        logger.warning("rid=%s SECRETO INTERNO RECHAZADO %s %s -> 403", x_request_id, request.method, request.url.path)
         raise HTTPException(status_code=403, detail="Acceso no autorizado al servicio privado inventory")
+    logger.info("rid=%s secreto interno VERIFICADO %s %s", x_request_id, request.method, request.url.path)
 
 
 class ProductoIn(BaseModel):
@@ -141,7 +155,11 @@ def delete_product(
 
 
 @app.post("/inventory/reserve")
-def reserve_stock(datos: ReservaStockIn, _: None = Depends(verify_internal_secret)):
+def reserve_stock(
+    datos: ReservaStockIn,
+    _: None = Depends(verify_internal_secret),
+    x_request_id: str | None = Header(default=None),
+):
     """Operación atómica: comprueba stock de todos los ítems y reserva si es suficiente."""
     conn = get_connection()
     cur = conn.cursor()
@@ -160,9 +178,13 @@ def reserve_stock(datos: ReservaStockIn, _: None = Depends(verify_internal_secre
                     status_code=409,
                     detail=f"Stock insuficiente para {prod['nombre']} (disponibles: {prod['stock']}, pedidos: {it.cantidad})",
                 )
+            nuevo_stock = prod["stock"] - it.cantidad
             cur.execute("UPDATE products SET stock = stock - ? WHERE id = ?", (it.cantidad, it.id))
+            logger.info("rid=%s DB dbInventory UPDATE products id=%s '%s' stock %s -> %s",
+                        x_request_id, prod["id"], prod["nombre"], prod["stock"], nuevo_stock)
             productos_reservados.append({"id": prod["id"], "nombre": prod["nombre"], "precio": prod["precio"], "cantidad": it.cantidad})
         conn.commit()
+        logger.info("rid=%s DB dbInventory COMMIT reserva de stock (%s productos)", x_request_id, len(productos_reservados))
         return {"status": "reserved", "items": productos_reservados}
     except HTTPException:
         raise

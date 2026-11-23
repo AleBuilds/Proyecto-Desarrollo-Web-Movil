@@ -34,9 +34,9 @@ def test_servicio_falla_al_arrancar_sin_secreto():
     """Fail-fast: sin INTERNAL_SERVICE_SECRET el servicio no levanta con un valor por defecto."""
     entorno = {k: v for k, v in os.environ.items() if k != "INTERNAL_SERVICE_SECRET"}
     r = subprocess.run(
-        [sys.executable, "-I", "-c", "import sys; sys.path.insert(0, r'%s'); import inventory_service"
+        [sys.executable, "-c", "import sys; sys.path.insert(0, r'%s'); import inventory_service"
          % (RAIZ / "services" / "inventory")],
-        env=entorno, capture_output=True, text=True,
+        env=entorno, capture_output=True, text=True, encoding="utf-8", errors="replace",
     )
     assert r.returncode != 0
     assert "INTERNAL_SERVICE_SECRET" in r.stderr

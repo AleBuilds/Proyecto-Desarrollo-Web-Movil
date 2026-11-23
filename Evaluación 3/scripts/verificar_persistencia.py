@@ -14,6 +14,7 @@ DBS = {
     "orders": RAIZ / "services" / "orders" / "dbOrders.sqlite",
     "payments": RAIZ / "services" / "payments" / "dbPayments.sqlite",
     "inventory": RAIZ / "services" / "inventory" / "dbInventory.sqlite",
+    "clients": RAIZ / "services" / "clients" / "dbClients.sqlite",
 }
 
 
@@ -45,3 +46,5 @@ mostrar("dbPayments.payments (últimos 5 pagos)",
                              "FROM payments ORDER BY id DESC LIMIT 5"))
 mostrar("dbInventory.products (stock actual, primeros 5)",
         consulta("inventory", "SELECT id, nombre, precio, stock FROM products ORDER BY id LIMIT 5"))
+mostrar("dbClients.contact_messages (últimos mensajes de contacto)",
+        consulta("clients", "SELECT id, nombre, email, mensaje, created_at FROM contact_messages ORDER BY id DESC LIMIT 5"))

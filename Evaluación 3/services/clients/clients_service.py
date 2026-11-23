@@ -2,17 +2,25 @@
 Persistencia en dbClients.sqlite.
 Aplica principio de menor privilegio: solo entrega datos al titular o al rol admin.
 """
+import logging
 import os
 import secrets
 import sqlite3
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from db_clients import get_connection, init_db, reset_test_data
 
 INTERNAL_SERVICE_SECRET = os.environ["INTERNAL_SERVICE_SECRET"]
+
+logger = logging.getLogger("clients")
+if not logger.handlers:
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter("%(asctime)s %(levelname)s [clients] %(message)s"))
+    logger.addHandler(_h)
+logger.setLevel(logging.INFO)
 
 
 @asynccontextmanager
@@ -24,11 +32,17 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Clients Microservice - El Mediterráneo", lifespan=lifespan)
 
 
-def verify_internal_secret(x_internal_secret: str | None = Header(default=None)):
+def verify_internal_secret(
+    request: Request,
+    x_internal_secret: str | None = Header(default=None),
+    x_request_id: str | None = Header(default=None),
+):
     if x_internal_secret is None or not secrets.compare_digest(
         x_internal_secret.encode("utf-8"), INTERNAL_SERVICE_SECRET.encode("utf-8")
     ):
+        logger.warning("rid=%s SECRETO INTERNO RECHAZADO %s %s -> 403", x_request_id, request.method, request.url.path)
         raise HTTPException(status_code=403, detail="Acceso no autorizado al servicio privado clients")
+    logger.info("rid=%s secreto interno VERIFICADO %s %s", x_request_id, request.method, request.url.path)
 
 
 class PerfilUpdateIn(BaseModel):
@@ -75,7 +89,11 @@ class ContactoIn(BaseModel):
 
 
 @app.post("/contact", status_code=201)
-def create_contact_message(datos: ContactoIn, _: None = Depends(verify_internal_secret)):
+def create_contact_message(
+    datos: ContactoIn,
+    _: None = Depends(verify_internal_secret),
+    x_request_id: str | None = Header(default=None),
+):
     """Mensaje de contacto (REQ-08). Dato personal restringido: solo lo lee el administrador."""
     conn = get_connection()
     cur = conn.execute(
@@ -85,6 +103,7 @@ def create_contact_message(datos: ContactoIn, _: None = Depends(verify_internal_
     conn.commit()
     nuevo = cur.lastrowid
     conn.close()
+    logger.info("rid=%s DB dbClients INSERT contact_messages id=%s COMMIT", x_request_id, nuevo)
     return {"id": nuevo, "status": "recibido"}
 
 

@@ -3,13 +3,14 @@ Persistencia en dbOrders.sqlite.
 Colabora mediante contratos con Inventory (:9001) y Payments (:9004).
 """
 import json
+import logging
 import os
 import secrets
 from contextlib import asynccontextmanager
 from typing import Literal
 
 import httpx
-from fastapi import Depends, FastAPI, Header, HTTPException, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
 from db_orders import get_connection, init_db, reset_test_data
@@ -19,6 +20,13 @@ PAYMENTS_SERVICE_SECRET = os.environ["PAYMENTS_SERVICE_SECRET"]  # credencial or
 INVENTORY_URL = os.getenv("INVENTORY_URL", "http://127.0.0.1:9001")
 PAYMENTS_URL = os.getenv("PAYMENTS_URL", "http://127.0.0.1:9004")
 ENVIO_COSTO = 2500
+
+logger = logging.getLogger("orders")
+if not logger.handlers:
+    _h = logging.StreamHandler()
+    _h.setFormatter(logging.Formatter("%(asctime)s %(levelname)s [orders] %(message)s"))
+    logger.addHandler(_h)
+logger.setLevel(logging.INFO)
 
 
 @asynccontextmanager
@@ -30,11 +38,17 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Orders Microservice - El Mediterráneo", lifespan=lifespan)
 
 
-def verify_internal_secret(x_internal_secret: str | None = Header(default=None)):
+def verify_internal_secret(
+    request: Request,
+    x_internal_secret: str | None = Header(default=None),
+    x_request_id: str | None = Header(default=None),
+):
     if x_internal_secret is None or not secrets.compare_digest(
         x_internal_secret.encode("utf-8"), INTERNAL_SERVICE_SECRET.encode("utf-8")
     ):
+        logger.warning("rid=%s SECRETO INTERNO RECHAZADO %s %s -> 403", x_request_id, request.method, request.url.path)
         raise HTTPException(status_code=403, detail="Acceso no autorizado al servicio privado orders")
+    logger.info("rid=%s secreto interno VERIFICADO %s %s", x_request_id, request.method, request.url.path)
 
 
 def obtener_identidad(
@@ -42,10 +56,13 @@ def obtener_identidad(
     x_authenticated_user: str | None = Header(default=None),
     x_authenticated_username: str | None = Header(default=None),
     x_authenticated_roles: str | None = Header(default=None),
+    x_request_id: str | None = Header(default=None),
 ) -> dict:
     if not x_authenticated_user:
+        logger.warning("rid=%s identidad ausente -> 401", x_request_id)
         raise HTTPException(status_code=401, detail="Contexto de identidad no provisto por el Gateway")
     roles = [r.strip() for r in (x_authenticated_roles or "").split(",") if r.strip()]
+    logger.info("rid=%s identidad recibida del gateway user=%s roles=%s", x_request_id, x_authenticated_username or "anónimo", roles)
     return {
         "user_id": x_authenticated_user,
         "username": x_authenticated_username or "anónimo",
@@ -106,6 +123,7 @@ async def create_order(
     datos: PedidoIn,
     ident: dict = Depends(obtener_identidad),
     x_idempotency_key: str | None = Header(default=None),
+    x_request_id: str | None = Header(default=None),
 ):
     # 1. Comprobación de Idempotencia (Paso C3-4 y D_F02_Reintento)
     conn = get_connection()
@@ -116,6 +134,7 @@ async def create_order(
             (x_idempotency_key,),
         )
         prev = cur.fetchone()
+        logger.info("rid=%s DB dbOrders SELECT idempotency_records -> %s", x_request_id, "encontrado (reintento)" if prev else "no existe")
         if prev:
             conn.close()
             # Devuelve exactamente el pedido registrado previamente sin re-procesar ni duplicar cobros
@@ -126,13 +145,17 @@ async def create_order(
         raise HTTPException(status_code=400, detail="El método delivery requiere dirección de entrega válida")
 
     # 2. Coordinación con Inventory: Reserva atómica de Stock y obtención de Precios oficiales
+    inv_headers = {"X-Internal-Secret": INTERNAL_SERVICE_SECRET}
+    if x_request_id:
+        inv_headers["X-Request-ID"] = x_request_id
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
             inv_res = await client.post(
                 f"{INVENTORY_URL}/inventory/reserve",
                 json={"items": [it.model_dump() for it in datos.items]},
-                headers={"X-Internal-Secret": INTERNAL_SERVICE_SECRET},
+                headers=inv_headers,
             )
+        logger.info("rid=%s orders -> inventory /inventory/reserve respondió %s", x_request_id, inv_res.status_code)
         if inv_res.status_code == 409:
             conn.close()
             raise HTTPException(status_code=409, detail=inv_res.json().get("detail", "Stock insuficiente"))
@@ -168,27 +191,35 @@ async def create_order(
         ),
     )
     pedido_id = cur.lastrowid
+    logger.info("rid=%s DB dbOrders INSERT orders id=%s total=%s status=pending", x_request_id, pedido_id, total)
 
     for it in items_con_precio:
         cur.execute(
             "INSERT INTO order_items (order_id, product_id, nombre, precio, cantidad) VALUES (?, ?, ?, ?, ?)",
             (pedido_id, it["id"], it["nombre"], it["precio"], it["cantidad"]),
         )
+    logger.info("rid=%s DB dbOrders INSERT order_items (%s filas) order_id=%s", x_request_id, len(items_con_precio), pedido_id)
 
     # 5. Coordinación con Payments: el estado depende del resultado REAL del cobro (nunca del navegador)
     estado = "pending"  # pago pendiente si payments no responde o rechaza; el stock queda reservado
+    pay_headers = {"X-Internal-Secret": PAYMENTS_SERVICE_SECRET}
+    if x_request_id:
+        pay_headers["X-Request-ID"] = x_request_id
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
             r_pago = await client.post(
                 f"{PAYMENTS_URL}/payments/process",
                 json={"order_id": pedido_id, "user_id": ident["user_id"], "monto": total, "metodo_pago": "webpay"},
-                headers={"X-Internal-Secret": PAYMENTS_SERVICE_SECRET},
+                headers=pay_headers,
             )
+        logger.info("rid=%s orders -> payments /payments/process respondió %s", x_request_id, r_pago.status_code)
         if r_pago.status_code in (200, 201) and r_pago.json().get("status") in ("approved", "already_processed"):
             estado = "confirmed"
     except (httpx.RequestError, ValueError):
+        logger.warning("rid=%s payments no disponible: el pedido queda pending", x_request_id)
         pass  # degradación controlada: el pedido queda `pending`, no se declara pagado
     cur.execute("UPDATE orders SET status = ? WHERE id = ?", (estado, pedido_id))
+    logger.info("rid=%s DB dbOrders UPDATE orders id=%s status=%s", x_request_id, pedido_id, estado)
 
     resultado = {
         "id": pedido_id,
@@ -214,6 +245,7 @@ async def create_order(
         )
 
     conn.commit()
+    logger.info("rid=%s DB dbOrders COMMIT pedido id=%s status=%s", x_request_id, pedido_id, estado)
     conn.close()
     return resultado
 
